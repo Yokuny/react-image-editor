@@ -1,39 +1,66 @@
-import { useCanvasStore } from "../../hooks/useCanvasStore";
 import "rc-slider/assets/index.css";
 import { FlipHorizontal, FlipVertical, RotateCcw, RotateCw } from "lucide-react";
+import { useAppStore } from "../../hooks/useAppStore";
+import { useCanvasStore } from "../../hooks/useCanvasStore";
+import { FlipCommand } from "../../command/flip";
+import { RotationCommand } from "../../command/rotation";
 import Slider from "../Slider";
 
 const ToolbarRotate: React.FC = () => {
-  const {
-    flipX,
-    setFlipX,
-    flipY,
-    setFlipY,
-    angle,
-    setAngle,
-    // Note: rotateRight/Left should be actions in the store if we want to follow the same logic
-  } = useCanvasStore();
+  const { flipX, setFlipX, flipY, setFlipY, angle, scale } = useCanvasStore();
+
+  const pushToHistory = (command: { execute: () => void; undo: () => void; name: string }) => {
+    const history = useAppStore.getState().history;
+    history.push(command as any);
+  };
 
   const rotateLeft = () => {
+    const prevAngle = angle;
     let newAngle = angle - 90;
     if (newAngle < -360) newAngle += 360;
-    setAngle(newAngle);
+
+    const command = new RotationCommand(prevAngle, newAngle, scale, scale);
+    command.execute();
+    pushToHistory(command);
   };
 
   const rotateRight = () => {
+    const prevAngle = angle;
     let newAngle = angle + 90;
     if (newAngle > 360) newAngle -= 360;
-    setAngle(newAngle);
+
+    const command = new RotationCommand(prevAngle, newAngle, scale, scale);
+    command.execute();
+    pushToHistory(command);
+  };
+
+  const handleFlipX = () => {
+    const command = new FlipCommand(() => setFlipX(!useAppStore.getState().flipX));
+    command.execute();
+    pushToHistory(command);
+  };
+
+  const handleFlipY = () => {
+    const command = new FlipCommand(() => setFlipY(!useAppStore.getState().flipY));
+    command.execute();
+    pushToHistory(command);
+  };
+
+  const handleAngleSlider = (value: number) => {
+    const prevAngle = angle;
+    const command = new RotationCommand(prevAngle, value, scale, scale);
+    command.execute();
+    pushToHistory(command);
   };
 
   return (
     <div className="toolbar__content">
       <div className="toolbar__options toolbar__options_one-col">
-        <div className={`toolbar__option ${flipX ? "toolbar__option_active" : ""}`} onClick={() => setFlipX(!flipX)}>
+        <div className={`toolbar__option ${flipX ? "toolbar__option_active" : ""}`} onClick={handleFlipX}>
           <FlipHorizontal /> <p> Flip X</p>
         </div>
 
-        <div className={`toolbar__option ${flipY ? "toolbar__option_active" : ""}`} onClick={() => setFlipY(!flipY)}>
+        <div className={`toolbar__option ${flipY ? "toolbar__option_active" : ""}`} onClick={handleFlipY}>
           <FlipVertical /> <p> Flip Y</p>
         </div>
 
@@ -58,7 +85,7 @@ const ToolbarRotate: React.FC = () => {
           180: "180°",
           "-180": "-180°",
         }}
-        callback={(value) => setAngle(value)}
+        callback={handleAngleSlider}
       />
     </div>
   );

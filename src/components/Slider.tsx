@@ -11,10 +11,12 @@ type Props = {
   marks?: any;
   renderIcon?: () => JSX.Element;
   callback: (value: number) => void;
+  onBeforeChange?: () => void;
+  onAfterChange?: () => void;
 };
 
 const Slider: React.FC<Props> = (props) => {
-  const { title, value, min, max, step = 1, startPoint = 0, marks = {}, callback } = props;
+  const { title, value, min, max, step = 1, startPoint = 0, marks = {}, callback, onBeforeChange, onAfterChange } = props;
   return (
     <div className="toolbar__block">
       <div className="slider__header">
@@ -31,6 +33,12 @@ const Slider: React.FC<Props> = (props) => {
           if (typeof val === "number") {
             callback(val);
           }
+        }}
+        onBeforeChange={() => {
+          onBeforeChange?.();
+        }}
+        onChangeComplete={() => {
+          onAfterChange?.();
         }}
         marks={marks}
       />
