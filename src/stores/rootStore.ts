@@ -1,19 +1,18 @@
-import { CropperStore } from "./cropperStore"
-import { CanvasStore } from "./canvasStore";
-import { DrawingStore } from "./drawingStore";
-import { TextStore } from "./textStore";
-import { SearchStore } from "./searchStore";
-import { UIStore } from "./UIStore";
-import { ObjectManagerStore } from "./objectManagerStore";
 import { fabric } from "fabric";
+import { CanvasStore } from "./canvasStore";
+import { CropperStore } from "./cropperStore";
+import { DrawingStore } from "./drawingStore";
 import { ImageStore } from "./imageStore";
+import { ObjectManagerStore } from "./objectManagerStore";
+import { TextStore } from "./textStore";
+import { UIStore } from "./UIStore";
 
 export class RootStore {
   cropperStore: CropperStore;
   canvasStore: CanvasStore;
   drawingStore: DrawingStore;
   textStore: TextStore;
-  searchStore: SearchStore;
+
   UIStore: UIStore;
   objectManagerStore: ObjectManagerStore;
   imageStore: ImageStore;
@@ -31,7 +30,7 @@ export class RootStore {
     this.cropperStore = new CropperStore(this);
     this.drawingStore = new DrawingStore(this);
     this.textStore = new TextStore(this);
-    this.searchStore = new SearchStore(this);
+
     this.UIStore = new UIStore(this);
   }
 

@@ -6,10 +6,10 @@ type Props = {
   currentColorCode: string;
   output?: "rgb" | "hex";
   callback: (value: string) => void;
-}
+};
 
-const ColorPicker: React.FC<Props> = props => {
-  const {currentColorCode, callback, title, output} = props;
+const ColorPicker: React.FC<Props> = (props) => {
+  const { currentColorCode, callback, title, output } = props;
   const [rgbCodes, setRgbCodes] = useState([
     "255,255,255",
     "177,177,177",
@@ -25,10 +25,7 @@ const ColorPicker: React.FC<Props> = props => {
     "233,99,233",
   ]);
 
-  const updateColor = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    elIndex: number,
-  ) => {
+  const updateColor = (event: React.ChangeEvent<HTMLInputElement>, elIndex: number) => {
     const hex = event.target.value;
     const rgb = hexToRgb(hex);
 
@@ -47,20 +44,16 @@ const ColorPicker: React.FC<Props> = props => {
       {title && <p className="toolbar__block-title">{title}</p>}
       <div className="colors__grid">
         {rgbCodes.map((rgbCode, index) => {
-          const [r, g, b] = rgbCode.split(",").map(item => Number(item));
+          const [r, g, b] = rgbCode.split(",").map((item) => Number(item));
           const hexColorCode = rgbToHex(r, g, b);
           return (
             <input
               key={index}
               type="color"
               value={`${hexColorCode}`}
-              onChange={event => updateColor(event, index)}
-              onClick={() => (
-                callback(output === "hex" ? hexColorCode : rgbCode)
-              )}
-              className={`colors__color ${
-                rgbCode === currentColorCode ? "colors__color_active" : ""
-              }`}
+              onChange={(event) => updateColor(event, index)}
+              onClick={() => callback(output === "hex" ? hexColorCode : rgbCode)}
+              className={`colors__color ${rgbCode === currentColorCode ? "colors__color_active" : ""}`}
             />
           );
         })}

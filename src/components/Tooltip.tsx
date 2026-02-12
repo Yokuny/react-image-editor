@@ -6,9 +6,9 @@ type Props = {
   content: string;
   placement: string;
   children: React.ReactNode;
-}
+};
 
-const Tooltip: React.FC<Props> = ({content, placement, children}) => {
+const Tooltip: React.FC<Props> = ({ content, placement, children }) => {
   const targetElRef = useRef(null);
   const [isVisible, toggleVisibility] = useState(false);
   const [isRemoved, remove] = useState(false);
@@ -31,24 +31,10 @@ const Tooltip: React.FC<Props> = ({content, placement, children}) => {
 
   return (
     <>
-      <div
-        className="tooltip__container"
-        ref={targetElRef}
-        onMouseEnter={show}
-        onMouseLeave={hide}
-        onMouseMove={mouseMoveHandler}
-        onClick={clickHandler}
-      >
+      <div className="tooltip__container" ref={targetElRef} onMouseEnter={show} onMouseLeave={hide} onMouseMove={mouseMoveHandler} onClick={clickHandler}>
         {children}
       </div>
-      {isVisible && ReactDOM.createPortal(
-        <TooltipElement
-          content={content}
-          placement={placement}
-          targetEl={targetElRef.current}
-        />,
-        document.body,
-      )}
+      {isVisible && ReactDOM.createPortal(<TooltipElement content={content} placement={placement} targetEl={targetElRef.current} />, document.body)}
     </>
   );
 };

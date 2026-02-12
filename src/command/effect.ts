@@ -1,4 +1,4 @@
-import {Command, CommandName} from "./commandHistory";
+import { Command, CommandName } from "./commandHistory";
 import rootStore from "../stores/rootStore";
 import { EffectValue } from "../stores/effectsStore";
 
@@ -19,7 +19,7 @@ export class EffectCommand implements Command {
   }
 
   setEffect(values: EffectValue[]): void {
-    const {effects} = rootStore.imageStore;
+    const { effects } = rootStore.imageStore;
     effects.setValues(values);
     effects.savedValues = values;
   }

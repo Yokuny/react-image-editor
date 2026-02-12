@@ -1,14 +1,6 @@
 import rootStore from "../stores/rootStore";
 
-export type CommandName = (
-  "crop"
-  | "effect"
-  | "flip"
-  | "rotate"
-  | "add_object"
-  | "remove_object"
-  | "set_image"
-);
+export type CommandName = "crop" | "effect" | "flip" | "rotate" | "add_object" | "remove_object" | "set_image";
 
 export interface Command {
   name: CommandName;
@@ -32,11 +24,7 @@ export class History {
       return;
     }
 
-    this.history.splice(
-      this.currentCommandIndex + 1,
-      this.history.length,
-      command,
-    );
+    this.history.splice(this.currentCommandIndex + 1, this.history.length, command);
 
     if (this.history.length > this.MAX_HISTORY_LENGTH) {
       this.history.shift();

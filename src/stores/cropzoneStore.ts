@@ -6,11 +6,11 @@ import { CanvasStore } from "../stores/canvasStore";
 import { ImageStore } from "../stores/imageStore";
 
 type CropZoneInfo = {
-  width: number,
-  height: number,
-  x: number,
-  y: number,
-}
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
 
 export default class CropZone {
   @observable width: number = 0;
@@ -30,7 +30,7 @@ export default class CropZone {
   }
 
   create(): void {
-    const {width, height} = this.canvas.size;
+    const { width, height } = this.canvas.size;
     this.setInitialSize();
     this.setLeft(width / 2 - this.width / 2);
     this.setTop(height / 2 - this.height / 2);
@@ -73,8 +73,8 @@ export default class CropZone {
 
   updateWidth(cropZoneWidth: number): void {
     if (cropZoneWidth && this.width !== cropZoneWidth) {
-      const {minWidth} = this.getMinSize();
-      const {maxWidth} = this.getMaxSize();
+      const { minWidth } = this.getMinSize();
+      const { maxWidth } = this.getMaxSize();
 
       let width = Math.max(cropZoneWidth, minWidth);
       width = Math.min(width, maxWidth);
@@ -89,8 +89,8 @@ export default class CropZone {
 
   updateHeight(cropZoneHeight: number): void {
     if (cropZoneHeight && this.height !== cropZoneHeight) {
-      const {minHeight} = this.getMinSize();
-      const {maxHeight} = this.getMaxSize();
+      const { minHeight } = this.getMinSize();
+      const { maxHeight } = this.getMaxSize();
 
       let height = Math.max(cropZoneHeight, minHeight);
       height = Math.min(height, maxHeight);
@@ -109,14 +109,8 @@ export default class CropZone {
   }
 
   resize(cropZoneInfo: CropZoneInfo, corner: string): void {
-    const adjustedCropZone = this.adjustCropZoneWithAspectRatio(
-      cropZoneInfo,
-      corner,
-    );
-    const {x, y, width, height} = this.adjustCropZoneWithMinValues(
-      adjustedCropZone,
-      corner,
-    );
+    const adjustedCropZone = this.adjustCropZoneWithAspectRatio(cropZoneInfo, corner);
+    const { x, y, width, height } = this.adjustCropZoneWithMinValues(adjustedCropZone, corner);
 
     this.setWidth(width);
     this.setHeight(height);
@@ -142,23 +136,17 @@ export default class CropZone {
 
     this.canvas.setZoom(scale);
 
-    const cropCommand = new CropCommand(
-      croppedImageUrl,
-      this.canvas.instance.getObjects(),
-    );
+    const cropCommand = new CropCommand(croppedImageUrl, this.canvas.instance.getObjects());
     this.canvas.history.push(cropCommand);
     cropCommand.execute();
   }
 
   private setInitialSize(): void {
-    const {size: canvasSize} = this.canvas;
+    const { size: canvasSize } = this.canvas;
     let width = canvasSize.width;
     let height = canvasSize.height;
     if (this.ratio) {
-      const size = this.convertAspectRatioToActualSize(
-        canvasSize.width,
-        canvasSize.height,
-      );
+      const size = this.convertAspectRatioToActualSize(canvasSize.width, canvasSize.height);
       if (size) {
         width = size.width;
         height = size.height;
@@ -168,37 +156,25 @@ export default class CropZone {
     this.setHeight(height);
   }
 
-  private convertAspectRatioToActualSize(
-    containerWidth: number,
-    containerHeight: number,
-  ): Ratio {
+  private convertAspectRatioToActualSize(containerWidth: number, containerHeight: number): Ratio {
     if (!this.ratio) {
       return null;
     }
-    const height = Math.min(
-      this.ratio.height * containerWidth / this.ratio.width,
-      containerHeight,
-    );
-    const width = Math.min(
-      this.ratio.width / this.ratio.height * containerHeight,
-      containerWidth,
-    );
-    return {width, height};
+    const height = Math.min((this.ratio.height * containerWidth) / this.ratio.width, containerHeight);
+    const width = Math.min((this.ratio.width / this.ratio.height) * containerHeight, containerWidth);
+    return { width, height };
   }
 
   private getMinSize(): {
     minWidth: number;
     minHeight: number;
     minX: number;
-    minY: number
+    minY: number;
   } {
     let minWidth = 40;
     let minHeight = 40;
     if (this.ratio) {
-      const minSize = this.convertAspectRatioToActualSize(
-        minWidth,
-        minHeight,
-      );
+      const minSize = this.convertAspectRatioToActualSize(minWidth, minHeight);
       if (minSize) {
         minWidth = minSize.width;
         minHeight = minSize.height;
@@ -218,7 +194,7 @@ export default class CropZone {
     maxX: number;
     maxY: number;
   } {
-    const {size: canvasSize} = this.canvas;
+    const { size: canvasSize } = this.canvas;
     const maxDimensions: any = {
       tl: {
         width: this.left + this.width,
@@ -246,10 +222,7 @@ export default class CropZone {
     let maxHeight = maxDimensions[corner].height;
 
     if (this.ratio) {
-      const maxSize = this.convertAspectRatioToActualSize(
-        maxWidth,
-        maxHeight,
-      );
+      const maxSize = this.convertAspectRatioToActualSize(maxWidth, maxHeight);
       if (maxSize) {
         maxWidth = maxSize.width;
         maxHeight = maxSize.height;
@@ -263,17 +236,13 @@ export default class CropZone {
     };
   }
 
-  private adjustCropZoneWithAspectRatio(
-    cropZoneInfo: CropZoneInfo,
-    corner: string,
-  ): CropZoneInfo {
-
+  private adjustCropZoneWithAspectRatio(cropZoneInfo: CropZoneInfo, corner: string): CropZoneInfo {
     if (!this.ratio) {
       return cropZoneInfo;
     }
 
-    let {width, height, x, y} = cropZoneInfo;
-    const {maxWidth, maxHeight, maxX, maxY} = this.getMaxSize(corner);
+    let { width, height, x, y } = cropZoneInfo;
+    const { maxWidth, maxHeight, maxX, maxY } = this.getMaxSize(corner);
 
     if (corner !== "mt" && corner !== "mb") {
       height = this.getProportionalHeightValue(width);
@@ -294,27 +263,20 @@ export default class CropZone {
     x = Math.max(x, maxX);
     y = Math.max(y, maxY);
 
-    return {width, height, x, y};
+    return { width, height, x, y };
   }
 
-  private adjustCropZoneWithMinValues(
-    values: CropZoneInfo,
-    corner: string,
-  ): CropZoneInfo {
-    const {minWidth, minHeight, minX, minY} = this.getMinSize();
+  private adjustCropZoneWithMinValues(values: CropZoneInfo, corner: string): CropZoneInfo {
+    const { minWidth, minHeight, minX, minY } = this.getMinSize();
 
-    let x = corner === "mr" || corner === "tr" || corner === "br"
-      ? Math.max(values.x, this.left)
-      : Math.min(values.x, minX);
+    let x = corner === "mr" || corner === "tr" || corner === "br" ? Math.max(values.x, this.left) : Math.min(values.x, minX);
 
-    let y = corner === "mb" || corner === "bl" || corner === "br"
-      ? Math.max(values.y, this.top)
-      : Math.min(values.y, minY);
+    let y = corner === "mb" || corner === "bl" || corner === "br" ? Math.max(values.y, this.top) : Math.min(values.y, minY);
 
     const width = Math.max(values.width, minWidth);
     const height = Math.max(values.height, minHeight);
 
-    return {x, y, width, height};
+    return { x, y, width, height };
   }
 
   private getProportionalWidthValue(height: number): number {
@@ -348,16 +310,15 @@ export default class CropZone {
   }
 
   private getImagesAspectRatio(): number {
-    const {element: imageElement} = this.image;
-    const {flipX, flipY, angle} = this.canvas;
-    const image = new fabric.Image(imageElement, {flipX, flipY});
+    const { element: imageElement } = this.image;
+    const { flipX, flipY, angle } = this.canvas;
+    const image = new fabric.Image(imageElement, { flipX, flipY });
     image.rotate(angle).setCoords();
     const actualImageWidth = this.canvas.size.width;
     const originalImageWidth = image.getBoundingRect().width;
     return originalImageWidth / actualImageWidth;
   }
 }
-
 
 class RenderingCropZone {
   private innerRect: fabric.Group | null = null;
@@ -414,8 +375,8 @@ class RenderingCropZone {
     if (this.outerRect) {
       this.canvas.instance.remove(this.outerRect);
     }
-    const {size: canvasSize} = this.canvas;
-    const {left, top, width, height} = this.cropZone;
+    const { size: canvasSize } = this.canvas;
+    const { left, top, width, height } = this.cropZone;
     const right = left + width;
     const bottom = top + height;
 
@@ -447,14 +408,17 @@ class RenderingCropZone {
       L ${right} ${bottom}
     `;
 
-    this.outerRect = new fabric.Path(`
+    this.outerRect = new fabric.Path(
+      `
       ${topRect} ${leftRect} ${bottomRect} ${rightRect}
-    `, {
-      fill: this.OVERLAY_COLOR,
-      selectable: false,
-      hoverCursor: "default",
-      name: "overlay",
-    });
+    `,
+      {
+        fill: this.OVERLAY_COLOR,
+        selectable: false,
+        hoverCursor: "default",
+        name: "overlay",
+      },
+    );
     this.canvas.instance.add(this.outerRect);
   }
 
@@ -471,7 +435,7 @@ class RenderingCropZone {
 
   private renderHorizontalLines(options: fabric.ILineOptions): fabric.Object[] {
     const lines = [];
-    let {top, left, width, height} = this.cropZone;
+    let { top, left, width, height } = this.cropZone;
     top = height / 3 + top;
 
     for (let i = 0; i < 2; i++) {
@@ -484,7 +448,7 @@ class RenderingCropZone {
 
   private renderVerticalLines(options: fabric.ILineOptions): fabric.Object[] {
     const lines = [];
-    let {top, left, height, width} = this.cropZone;
+    let { top, left, height, width } = this.cropZone;
     left = width / 3 + left;
 
     for (let i = 0; i < 2; i++) {
@@ -496,7 +460,7 @@ class RenderingCropZone {
   }
 
   private renderFrame(): fabric.Group {
-    const {left, top, width, height} = this.cropZone;
+    const { left, top, width, height } = this.cropZone;
     const frame = new fabric.Rect({
       width: width - this.FRAME_WIDTH,
       height: height - this.FRAME_WIDTH,
@@ -514,7 +478,7 @@ class RenderingCropZone {
 
   private drawFrameCorners(): fabric.Object[] {
     const lineOptions = {
-      stroke:  "white",
+      stroke: "white",
       strokeWidth: this.FRAME_WIDTH,
       selectable: false,
     };
@@ -523,66 +487,40 @@ class RenderingCropZone {
     const trCorner = this.drawTopRightCorner(lineOptions);
     const brCorner = this.drawBottomRightCorner(lineOptions);
     const blCorner = this.drawBottomLeftCorner(lineOptions);
-    return [
-      ...tlCorner,
-      ...trCorner,
-      ...brCorner,
-      ...blCorner,
-    ];
+    return [...tlCorner, ...trCorner, ...brCorner, ...blCorner];
   }
 
   private drawTopLeftCorner(options: fabric.ILineOptions): fabric.Object[] {
-    const {left, top} = this.cropZone;
+    const { left, top } = this.cropZone;
     const size = this.FRAME_CORNERS_SIZE;
-    return [
-      new fabric.Line([left, top, left + size, top], options),
-      new fabric.Line([left, top, left, top + size], options),
-    ];
+    return [new fabric.Line([left, top, left + size, top], options), new fabric.Line([left, top, left, top + size], options)];
   }
 
   private drawTopRightCorner(options: fabric.ILineOptions): fabric.Object[] {
-    const {top, left, width} = this.cropZone;
+    const { top, left, width } = this.cropZone;
     const size = this.FRAME_CORNERS_SIZE;
     const right = left + width - this.FRAME_WIDTH;
-    return [
-      new fabric.Line([right - size, top, right, top], options),
-      new fabric.Line([right, top, right, top + size], options),
-    ];
+    return [new fabric.Line([right - size, top, right, top], options), new fabric.Line([right, top, right, top + size], options)];
   }
 
   private drawBottomRightCorner(options: fabric.ILineOptions): fabric.Object[] {
-    const {top, left, width, height} = this.cropZone;
-    const {FRAME_WIDTH, FRAME_CORNERS_SIZE: size} = this;
+    const { top, left, width, height } = this.cropZone;
+    const { FRAME_WIDTH, FRAME_CORNERS_SIZE: size } = this;
     const right = left + width - FRAME_WIDTH;
     const bottom = top + height;
     return [
       new fabric.Line([right, bottom - size, right, bottom], options),
-      new fabric.Line([
-        right - size,
-        bottom - FRAME_WIDTH,
-        right + FRAME_WIDTH,
-        bottom - FRAME_WIDTH,
-      ], options),
+      new fabric.Line([right - size, bottom - FRAME_WIDTH, right + FRAME_WIDTH, bottom - FRAME_WIDTH], options),
     ];
   }
 
   private drawBottomLeftCorner(options: fabric.ILineOptions): fabric.Object[] {
-    const {top, left, height} = this.cropZone;
+    const { top, left, height } = this.cropZone;
     const size = this.FRAME_CORNERS_SIZE;
     const bottom = top + height;
     return [
-      new fabric.Line([
-        left + size,
-        bottom - this.FRAME_WIDTH,
-        left,
-        bottom - this.FRAME_WIDTH,
-      ], options),
-      new fabric.Line([
-        left,
-        bottom - this.FRAME_WIDTH,
-        left,
-        bottom - size,
-      ], options),
+      new fabric.Line([left + size, bottom - this.FRAME_WIDTH, left, bottom - this.FRAME_WIDTH], options),
+      new fabric.Line([left, bottom - this.FRAME_WIDTH, left, bottom - size], options),
     ];
   }
 }

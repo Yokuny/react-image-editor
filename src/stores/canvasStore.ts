@@ -1,22 +1,14 @@
-import { observable, action, reaction } from "mobx";
 import { fabric } from "fabric";
+import { action, observable, reaction } from "mobx";
 import { History } from "../command/commandHistory";
+import { FlipCommand } from "../command/flip";
+import { RotationCommand } from "../command/rotation";
 import { disableHistoryRecording } from "../helpers/decorators";
 import { RootStore } from "./rootStore";
-import { RotationCommand } from "../command/rotation";
-import { FlipCommand } from "../command/flip";
 
-type CanvasSize = {width: number; height: number}
+type CanvasSize = { width: number; height: number };
 
-export type ModeName = (
-  "search"
-  | "crop"
-  | "adjust"
-  | "drawing"
-  | "text"
-  | "effects"
-  | ""
-);
+export type ModeName = "crop" | "adjust" | "drawing" | "text" | "effects" | "";
 
 interface SessionManager {
   onSessionStart: (modeName?: ModeName) => void;
@@ -39,14 +31,14 @@ export class CanvasStore {
   readonly history: History = new History();
   baseScale: number = 0;
   angleDiff: number = 0;
-  size: CanvasSize = {width: 0, height: 0};
+  size: CanvasSize = { width: 0, height: 0 };
 
   private readonly flip: Flip;
   private readonly rotation: Rotation;
   private readonly scaling: Scaling;
 
   private readonly listeners: any;
-  private readonly sessionManagers: {[modeName: string]: SessionManager} = {};
+  private readonly sessionManagers: { [modeName: string]: SessionManager } = {};
 
   private prevMode: ModeName = "";
   private prevAngle: number = 0;
@@ -172,13 +164,13 @@ export class CanvasStore {
   }
 
   setSize(width: number, height: number): void {
-    this.size = {width, height};
+    this.size = { width, height };
     this.instance.setHeight(height);
     this.instance.setWidth(width);
   }
 
-  getCenter(): {x: number, y: number} {
-    const {width, height} = this.size;
+  getCenter(): { x: number; y: number } {
+    const { width, height } = this.size;
     return {
       x: width / 2,
       y: height / 2,
@@ -193,11 +185,7 @@ export class CanvasStore {
     this.rotation.rotateEachObject();
   }
 
-  rotateObject(
-    obj: fabric.Object,
-    prevCanvasCenter: fabric.Point,
-    angleDiff: number,
-  ): void {
+  rotateObject(obj: fabric.Object, prevCanvasCenter: fabric.Point, angleDiff: number): void {
     this.rotation.rotateObject(obj, prevCanvasCenter, angleDiff);
   }
 
@@ -220,14 +208,7 @@ export class CanvasStore {
     if (modeName === "adjust") {
       this.scaling.setBaseScale();
       if (this.prevAngle !== this.angle) {
-        this.history.push(
-          new RotationCommand(
-            this.prevAngle,
-            this.angle,
-            this.prevBaseScale,
-            this.baseScale,
-          ),
-        );
+        this.history.push(new RotationCommand(this.prevAngle, this.angle, this.prevBaseScale, this.baseScale));
       }
     }
   }
@@ -266,14 +247,7 @@ export class CanvasStore {
 
   private updateFlip(): void {
     if (this.prevAngle !== this.angle) {
-      this.history.push(
-        new RotationCommand(
-          this.prevAngle,
-          this.angle,
-          this.prevBaseScale,
-          this.scaling.getBaseScale(),
-        ),
-      );
+      this.history.push(new RotationCommand(this.prevAngle, this.angle, this.prevBaseScale, this.scaling.getBaseScale()));
       this.prevAngle = this.angle;
       this.prevBaseScale = this.scaling.getBaseScale();
     }
@@ -295,12 +269,8 @@ class Scaling {
 
   getBaseScale(): number {
     const canvasContainer = document.querySelector(".canvas");
-    const containerHeight = (
-      canvasContainer?.clientHeight ?? this.root.imageStore.height
-    );
-    const scale = Math.floor(
-      containerHeight * 100 / this.root.imageStore.height,
-    );
+    const containerHeight = canvasContainer?.clientHeight ?? this.root.imageStore.height;
+    const scale = Math.floor((containerHeight * 100) / this.root.imageStore.height);
     if (scale) {
       return (scale - (scale % 10)) / 100;
     }
@@ -315,11 +285,11 @@ class Rotation {
     if (!this.root.imageStore.instance) {
       return;
     }
-    const {x, y} = this.root.canvasStore.getCenter();
+    const { x, y } = this.root.canvasStore.getCenter();
     const prevCanvasCenter = new fabric.Point(x, y);
     this.root.imageStore.setSize();
 
-    this.root.canvasStore.instance.forEachObject(obj => {
+    this.root.canvasStore.instance.forEachObject((obj) => {
       this.rotateObject(obj, prevCanvasCenter, this.root.canvasStore.angleDiff);
     });
     this.adjustEachObjectScale();
@@ -329,11 +299,11 @@ class Rotation {
     const image = this.root.imageStore.instance;
     if (image) {
       const canvasWidth = this.root.canvasStore.instance.getWidth();
-      const {width: imageWidth} = image.getBoundingRect();
+      const { width: imageWidth } = image.getBoundingRect();
       const ratio = canvasWidth / imageWidth;
-      const {top: shiftY, left: shiftX} = image.getBoundingRect();
+      const { top: shiftY, left: shiftX } = image.getBoundingRect();
 
-      this.root.canvasStore.instance.forEachObject(object => {
+      this.root.canvasStore.instance.forEachObject((object) => {
         let obj = object as any;
         if (obj) {
           obj.top -= shiftY;
@@ -347,25 +317,17 @@ class Rotation {
     }
   }
 
-  rotateObject(
-    obj: fabric.Object,
-    prevCanvasCenter: fabric.Point,
-    angleDiff: number,
-  ): void {
+  rotateObject(obj: fabric.Object, prevCanvasCenter: fabric.Point, angleDiff: number): void {
     if (!obj) {
       return;
     }
-    const {left = 0, top = 0, angle = 0} = obj;
+    const { left = 0, top = 0, angle = 0 } = obj;
     const canvasCenter = this.root.canvasStore.getCenter();
     const radians = fabric.util.degreesToRadians(angleDiff);
     const diffX = prevCanvasCenter.x - canvasCenter.x;
     const diffY = prevCanvasCenter.y - canvasCenter.y;
     const objectPoint = new fabric.Point(left, top);
-    const newObjectPosition = fabric.util.rotatePoint(
-      objectPoint,
-      prevCanvasCenter,
-      radians,
-    );
+    const newObjectPosition = fabric.util.rotatePoint(objectPoint, prevCanvasCenter, radians);
     obj.set({
       left: newObjectPosition.x - diffX,
       top: newObjectPosition.y - diffY,
@@ -385,11 +347,7 @@ class Rotation {
     const startingObjAngle = this.root.canvasStore.angle;
 
     this.setAngle(originalAngle);
-    this.rotateObjectToOriginalAngle(
-      obj,
-      prevCanvasCenter,
-      startingObjAngle,
-    );
+    this.rotateObjectToOriginalAngle(obj, prevCanvasCenter, startingObjAngle);
     obj.setCoords();
   }
 
@@ -402,17 +360,13 @@ class Rotation {
     this.rotateObject(obj, prevCanvasCenter, angleDiff);
   }
 
-  private rotateObjectToOriginalAngle(
-    obj: fabric.Object,
-    prevCanvasCenter: fabric.Point,
-    startingObjAngle: number,
-  ): void {
+  private rotateObjectToOriginalAngle(obj: fabric.Object, prevCanvasCenter: fabric.Point, startingObjAngle: number): void {
     const angleDiff = startingObjAngle + this.root.canvasStore.angle;
     this.rotateObject(obj, prevCanvasCenter, angleDiff);
   }
 
   private getCanvasCenter(): fabric.Point {
-    const {x, y} = this.root.canvasStore.getCenter();
+    const { x, y } = this.root.canvasStore.getCenter();
     return new fabric.Point(x, y);
   }
 
@@ -430,46 +384,35 @@ class Flip {
     this.axis = "x";
     this.flipEachObject();
 
-    this.root.canvasStore.history.push(
-      new FlipCommand(() => (
-        this.root.canvasStore.setFlipX(!this.root.canvasStore.flipX)
-      )),
-    );
+    this.root.canvasStore.history.push(new FlipCommand(() => this.root.canvasStore.setFlipX(!this.root.canvasStore.flipX)));
   }
 
   flipY(): void {
     this.axis = "y";
     this.flipEachObject();
 
-    this.root.canvasStore.history.push(
-      new FlipCommand(() => (
-        this.root.canvasStore.setFlipY(!this.root.canvasStore.flipY)
-      )),
-    );
+    this.root.canvasStore.history.push(new FlipCommand(() => this.root.canvasStore.setFlipY(!this.root.canvasStore.flipY)));
   }
 
   private flipEachObject(): void {
     if (this.root.imageStore) {
-      this.root.canvasStore.instance.forEachObject(obj => this.flipObject(obj));
+      this.root.canvasStore.instance.forEachObject((obj) => this.flipObject(obj));
       this.root.imageStore?.instance?.center();
     }
   }
 
   private flipObject(obj: any): void {
-    this.root.canvasStore.handleObjectAtAngle(
-      obj,
-      () => {
-        let {width, height}= obj.getBoundingRect();
+    this.root.canvasStore.handleObjectAtAngle(obj, () => {
+      let { width, height } = obj.getBoundingRect();
 
-        if (this.axis === "x") {
-          obj.flipX = !obj.flipX;
-          obj.left = this.root.imageStore.width - width - obj.left;
-        } else {
-          obj.flipY = !obj.flipY;
-          obj.top = this.root.imageStore.height - height - obj.top;
-        }
-        obj.setCoords();
-      },
-    );
+      if (this.axis === "x") {
+        obj.flipX = !obj.flipX;
+        obj.left = this.root.imageStore.width - width - obj.left;
+      } else {
+        obj.flipY = !obj.flipY;
+        obj.top = this.root.imageStore.height - height - obj.top;
+      }
+      obj.setCoords();
+    });
   }
 }

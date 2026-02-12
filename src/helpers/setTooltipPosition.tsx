@@ -27,17 +27,12 @@ export class TooltipPosition {
   private placement: string = "";
   private tooltipElement: HTMLDivElement | null = null;
   private triangleElement: HTMLDivElement | null = null;
-  private targetEl: IElementData = {...initialElementData};
-  private tooltip: IElementData = {...initialElementData};
+  private targetEl: IElementData = { ...initialElementData };
+  private tooltip: IElementData = { ...initialElementData };
   private bodyWidth: number = document.body.offsetWidth;
   private offset: number = 10;
 
-  setTooltipPosition(
-    placement: string,
-    targetEl: HTMLDivElement | null,
-    tooltip: HTMLDivElement | null,
-    triangle: HTMLDivElement | null,
-  ): void {
+  setTooltipPosition(placement: string, targetEl: HTMLDivElement | null, tooltip: HTMLDivElement | null, triangle: HTMLDivElement | null): void {
     if (!tooltip || !targetEl || !triangle) {
       return;
     }
@@ -77,27 +72,19 @@ export class TooltipPosition {
   }
 
   private getHorizontalTooltipCoords(): ICoords {
-    const yCoord = (
-      this.targetEl.top + this.targetEl.height / 2 - this.tooltip.height / 2
-    );
-    const xCoord = this.placement === "right"
-    ? this.getRightTooltipXCoord()
-    : this.getLeftTooltipXCoord();
-    return {y: yCoord, x: xCoord};
+    const yCoord = this.targetEl.top + this.targetEl.height / 2 - this.tooltip.height / 2;
+    const xCoord = this.placement === "right" ? this.getRightTooltipXCoord() : this.getLeftTooltipXCoord();
+    return { y: yCoord, x: xCoord };
   }
 
   private getVerticalTooltipCoords(): ICoords {
-    const yCoord = this.placement === "bottom"
-      ? this.getBottomTooltipYCoord()
-      : this.getTopTooltipYCoord();
+    const yCoord = this.placement === "bottom" ? this.getBottomTooltipYCoord() : this.getTopTooltipYCoord();
     const xCoord = this.getVerticalTooltipXCoord();
-    return {y: yCoord, x: xCoord};
+    return { y: yCoord, x: xCoord };
   }
 
   private getRightTooltipXCoord(): number {
-    const isTipInViewport = (
-      this.targetEl.right + this.tooltip.width < this.bodyWidth
-    );
+    const isTipInViewport = this.targetEl.right + this.tooltip.width < this.bodyWidth;
     const coord = isTipInViewport ? this.tooltip.right : this.tooltip.left;
     if (!isTipInViewport) {
       this.replaceTooltipClass("tooltip_left", "tooltip_right");
@@ -115,9 +102,7 @@ export class TooltipPosition {
   }
 
   private getBottomTooltipYCoord(): number {
-    const isTipInViewport = (
-      this.tooltip.bottom + this.tooltip.height < window.innerHeight
-    );
+    const isTipInViewport = this.tooltip.bottom + this.tooltip.height < window.innerHeight;
     const coord = isTipInViewport ? this.tooltip.bottom : this.tooltip.top;
     if (!isTipInViewport) {
       this.replaceTooltipClass("tooltip_top", "tooltip_bottom");
@@ -156,10 +141,7 @@ export class TooltipPosition {
     }
   }
 
-  private replaceTooltipClass(
-    newClassName: string,
-    oldClassName: string,
-  ): void {
+  private replaceTooltipClass(newClassName: string, oldClassName: string): void {
     if (this.tooltipElement) {
       this.tooltipElement.classList.remove(oldClassName);
       this.tooltipElement.classList.add(newClassName);

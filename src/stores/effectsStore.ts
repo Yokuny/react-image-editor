@@ -118,77 +118,81 @@ export default class EffectsStore {
 
   readonly list: Effect[] = [
     {
-     name: "brightness",
-     defaultValue: 0,
-     getValue: () => this.brightness,
-     setValue: value => this.brightness = value as number,
-     object: new fabric.Image.filters.Brightness({brightness: 0}),
+      name: "brightness",
+      defaultValue: 0,
+      getValue: () => this.brightness,
+      setValue: (value) => (this.brightness = value as number),
+      object: new fabric.Image.filters.Brightness({ brightness: 0 }),
     },
     {
       name: "contrast",
       defaultValue: 0,
       getValue: () => this.contrast,
-      setValue: value => this.contrast = value as number,
-      object: new fabric.Image.filters.Contrast({contrast: 0}),
+      setValue: (value) => (this.contrast = value as number),
+      object: new fabric.Image.filters.Contrast({ contrast: 0 }),
     },
     {
       name: "saturation",
       defaultValue: 0,
       getValue: () => this.saturation,
-      setValue: value => this.saturation = value as number,
-      object: new fabric.Image.filters.Saturation({saturation: 0}),
+      setValue: (value) => (this.saturation = value as number),
+      object: new fabric.Image.filters.Saturation({ saturation: 0 }),
     },
     {
       name: "tintColor",
       defaultValue: "#000",
       getValue: () => this.tintColor,
-      setValue: value => this.tintColor = value as string,
+      setValue: (value) => (this.tintColor = value as string),
       object: new fabric.Image.filters.BlendColor({
-        color: "#000", mode: "tint", alpha: 0,
+        color: "#000",
+        mode: "tint",
+        alpha: 0,
       }),
     },
     {
       name: "tintOpacity",
       defaultValue: 0,
       getValue: () => this.tintOpacity,
-      setValue: value => this.tintOpacity = value as number,
+      setValue: (value) => (this.tintOpacity = value as number),
     },
     {
       name: "invert",
       defaultValue: 0,
       getValue: () => this.invert,
       object: new fabric.Image.filters.BlendColor({
-        color: "#fff", mode: "exclusion", alpha: 0,
+        color: "#fff",
+        mode: "exclusion",
+        alpha: 0,
       }),
-      setValue: value => this.invert = value as number,
+      setValue: (value) => (this.invert = value as number),
     },
     {
       name: "hue",
       defaultValue: 0,
       getValue: () => this.hue,
-      setValue: value => this.hue = value as number,
-      object: new (fabric.Image.filters as any).HueRotation({rotation: 0}),
+      setValue: (value) => (this.hue = value as number),
+      object: new (fabric.Image.filters as any).HueRotation({ rotation: 0 }),
     },
     {
       name: "noise",
       defaultValue: 0,
       getValue: () => this.noise,
-      setValue: value => this.noise = value as number,
-      object: new fabric.Image.filters.Noise({noise: 0}),
+      setValue: (value) => (this.noise = value as number),
+      object: new fabric.Image.filters.Noise({ noise: 0 }),
     },
     {
       name: "blur",
       defaultValue: 0,
       getValue: () => this.blur,
-      setValue: value => this.blur = value as number,
-      object: new (fabric.Image.filters as any).Blur({blur: 0}),
+      setValue: (value) => (this.blur = value as number),
+      object: new (fabric.Image.filters as any).Blur({ blur: 0 }),
     },
     {
       name: "pixelate",
       defaultValue: 1,
       getValue: () => this.pixelate,
-      setValue: value => this.pixelate = value as number,
-      object: new fabric.Image.filters.Pixelate({blocksize: 1}),
+      setValue: (value) => (this.pixelate = value as number),
+      object: new fabric.Image.filters.Pixelate({ blocksize: 1 }),
     },
   ];
 
@@ -234,19 +238,19 @@ export default class EffectsStore {
   onSessionEnd(): void {
     const values = this.getValues();
 
-    const shouldSaveEffect = values.map((value, index) => {
-      return value !== this.savedValues[index];
-    }).includes(true);
+    const shouldSaveEffect = values
+      .map((value, index) => {
+        return value !== this.savedValues[index];
+      })
+      .includes(true);
 
     if (shouldSaveEffect) {
-      this.canvas.history.push(
-        new EffectCommand(this.savedValues, values),
-      );
+      this.canvas.history.push(new EffectCommand(this.savedValues, values));
     }
   }
 
   getValues(): EffectValue[] {
-    return this.list.map(effect => effect.getValue());
+    return this.list.map((effect) => effect.getValue());
   }
 
   setValues(values: EffectValue[]): void {
@@ -255,11 +259,7 @@ export default class EffectsStore {
     }
   }
 
-  private updateEffectProp(
-    propName: string,
-    value: EffectValue,
-    effectIndex: number,
-  ): void {
+  private updateEffectProp(propName: string, value: EffectValue, effectIndex: number): void {
     const image = this.image.instance as any;
     const effect = image?.filters[effectIndex] ?? null;
     if (effect && image) {

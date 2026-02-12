@@ -7,11 +7,11 @@ import { RemoveObjectCommand } from "../command/removeObject";
 
 type NotificationType = "obj_removed" | "obj_added" | "";
 type CanvasObject = fabric.Object | null;
-type Notification = {type: NotificationType, data: any};
+type Notification = { type: NotificationType; data: any };
 
 export class ObjectManagerStore {
   @observable selectedObject: CanvasObject = null;
-  @observable notification: Notification = {type: "", data: null};
+  @observable notification: Notification = { type: "", data: null };
   private readonly canvas: CanvasStore;
   private readonly selectableObjects: Set<ModeName> = new Set();
   private readonly listeners: any;
@@ -37,11 +37,11 @@ export class ObjectManagerStore {
   }
 
   @action private notifyDeletingObject(): void {
-    this.notification = {type: "obj_removed", data: null};
+    this.notification = { type: "obj_removed", data: null };
   }
 
   @action private notifyAddingObject(obj: CanvasObject): void {
-    this.notification = {type: "obj_added", data: obj};
+    this.notification = { type: "obj_added", data: obj };
   }
 
   registerObject(objName: ModeName): void {
@@ -63,7 +63,7 @@ export class ObjectManagerStore {
   }
 
   lockObjects(exceptions: string[] = []): void {
-    this.canvas.instance.forEachObject(obj => {
+    this.canvas.instance.forEachObject((obj) => {
       if (!exceptions.includes(String(obj.name))) {
         obj.set({
           evented: false,
@@ -73,7 +73,7 @@ export class ObjectManagerStore {
   }
 
   unlockObjects(exceptions: string[] = []): void {
-    this.canvas.instance.forEachObject(obj => {
+    this.canvas.instance.forEachObject((obj) => {
       if (!exceptions.includes(String(obj.name))) {
         obj.set({
           evented: true,
@@ -83,7 +83,7 @@ export class ObjectManagerStore {
   }
 
   removeObjects(): void {
-    this.canvas.instance.forEachObject(obj => {
+    this.canvas.instance.forEachObject((obj) => {
       if (obj.name !== this.root.imageStore.OBJ_NAME) {
         this.canvas.instance.remove(obj);
       }
@@ -97,7 +97,7 @@ export class ObjectManagerStore {
   }
 
   private onMouseDown(event: fabric.IEvent): void {
-    const {target} = event;
+    const { target } = event;
     const name = target?.name as ModeName;
     if (!name || !this.selectableObjects.has(name)) {
       if (this.selectedObject) {
@@ -111,7 +111,7 @@ export class ObjectManagerStore {
   }
 
   private onAdded(event: fabric.IEvent): void {
-    const {target} = event;
+    const { target } = event;
     if (!this.selectableObjects.has(this.canvas.mode) || !target) {
       return;
     }

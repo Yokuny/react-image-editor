@@ -5,7 +5,7 @@ import useStore from "../../hooks/useStore";
 import { ReactComponent as Undo } from "../../assets/undo.svg";
 
 export const UndoButton = () => {
-  const {UIStore, canvasStore} = useStore();
+  const { UIStore, canvasStore } = useStore();
   return useObserver(() => (
     <div>
       <Tooltip content="Undo" placement="bottom">

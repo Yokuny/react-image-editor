@@ -5,7 +5,7 @@ import useStore from "../../hooks/useStore";
 import { ReactComponent as Redo } from "../../assets/redo.svg";
 
 export const RedoButton = () => {
-  const {UIStore, canvasStore} = useStore();
+  const { UIStore, canvasStore } = useStore();
   return useObserver(() => (
     <div>
       <Tooltip content="Redo" placement="bottom">

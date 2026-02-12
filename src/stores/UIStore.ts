@@ -21,10 +21,7 @@ export class UIStore {
     this.root.canvasStore.setMode("");
   }
 
-  @action updateHistoryButtons(
-    canUndo: boolean,
-    canRedo: boolean,
-  ): void {
+  @action updateHistoryButtons(canUndo: boolean, canRedo: boolean): void {
     this.canUndo = canUndo;
     this.canRedo = canRedo;
   }

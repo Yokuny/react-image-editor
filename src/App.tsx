@@ -9,7 +9,7 @@ const App = () => {
     <div className="app">
       <Header />
       <Menu />
-      <Toolbar/>
+      <Toolbar />
       <Canvas />
     </div>
   );

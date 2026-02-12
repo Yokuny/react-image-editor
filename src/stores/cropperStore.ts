@@ -4,19 +4,19 @@ import { CanvasStore } from "./canvasStore";
 import CropZone from "./cropzoneStore";
 
 interface IEventTransform {
-  corner: string,
-  original: fabric.Object,
-  originX: string,
-  originY: string,
-  width: number,
-  ex: number,
-  ey: number,
+  corner: string;
+  original: fabric.Object;
+  originX: string;
+  originY: string;
+  width: number;
+  ex: number;
+  ey: number;
   target: {
-    width: number,
-    height: number,
-    top: number,
-    left: number,
-  }
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+  };
 }
 
 export type Ratio = {
@@ -25,7 +25,6 @@ export type Ratio = {
 } | null;
 
 export class CropperStore {
-
   @computed get cropZoneWidth(): number {
     return this.cropZone.width;
   }
@@ -52,11 +51,7 @@ export class CropperStore {
     root.canvasStore.registerSessionManager("crop", this);
 
     reaction(
-      () => [
-        root.canvasStore.scale,
-        root.canvasStore.angle,
-        root.imageStore.url,
-      ],
+      () => [root.canvasStore.scale, root.canvasStore.angle, root.imageStore.url],
       () => {
         if (root.canvasStore.mode === "crop") {
           this.onSessionEnd();
@@ -122,14 +117,7 @@ export class CropperStore {
     if (event?.target?.name !== this.cropZone.OBJ_NAME) {
       return;
     }
-    const {
-      startX,
-      startY,
-      endX,
-      endY,
-      startLeft,
-      startTop,
-    } = this.getMovingEventData(event);
+    const { startX, startY, endX, endY, startLeft, startTop } = this.getMovingEventData(event);
 
     const diffX = startX - endX;
     const diffY = startY - endY;
@@ -144,17 +132,7 @@ export class CropperStore {
     if (event?.target?.name !== this.cropZone.OBJ_NAME) {
       return;
     }
-    const {
-      startLeft,
-      startTop,
-      endLeft,
-      endTop,
-      endX,
-      endY,
-      width,
-      height,
-      corner,
-    } = this.getScalingEventData(event);
+    const { startLeft, startTop, endLeft, endTop, endX, endY, width, height, corner } = this.getScalingEventData(event);
 
     const resizeData: any = {
       tl: {
@@ -214,13 +192,10 @@ export class CropperStore {
 
   private getScalingEventData(event: fabric.IEvent) {
     const transform = event.transform as IEventTransform;
-    const {corner, target, original} = transform;
-    const {x: endX, y: endY} = this.getScalingPointer(event.pointer);
-    const {
-      left: startLeft,
-      top: startTop,
-    } = original as {left: number, top: number};
-    const {width, height, left: endLeft, top: endTop} = target;
+    const { corner, target, original } = transform;
+    const { x: endX, y: endY } = this.getScalingPointer(event.pointer);
+    const { left: startLeft, top: startTop } = original as { left: number; top: number };
+    const { width, height, left: endLeft, top: endTop } = target;
     return {
       startLeft,
       startTop,
@@ -236,23 +211,18 @@ export class CropperStore {
 
   private getMovingEventData(event: fabric.IEvent) {
     const transform = event.transform as IEventTransform;
-    const {ex: startX, ey: startY} = transform;
-    const {x: endX, y: endY} = event.pointer as fabric.Point;
-    const {
-      left: startLeft,
-      top: startTop,
-    } = transform.original as {left: number, top: number};
-    return {startX, startY, endX, endY, startLeft, startTop};
+    const { ex: startX, ey: startY } = transform;
+    const { x: endX, y: endY } = event.pointer as fabric.Point;
+    const { left: startLeft, top: startTop } = transform.original as { left: number; top: number };
+    return { startX, startY, endX, endY, startLeft, startTop };
   }
 
-  private getScalingPointer(
-    pointer: fabric.Point | undefined,
-  ): {x: number, y: number} {
+  private getScalingPointer(pointer: fabric.Point | undefined): { x: number; y: number } {
     if (!pointer) {
-      return {x: 0, y: 0};
+      return { x: 0, y: 0 };
     }
-    const {size} = this.canvas;
-    let {x, y} = pointer as fabric.Point;
+    const { size } = this.canvas;
+    let { x, y } = pointer as fabric.Point;
     if (x < 0) {
       x = 0;
     }
@@ -265,6 +235,6 @@ export class CropperStore {
     if (y > size.height) {
       y = size.height;
     }
-    return {x, y};
+    return { x, y };
   }
 }

@@ -72,7 +72,7 @@ export class ImageStore {
       return Promise.reject();
     }
     this.element.src = this.url;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       fabric.Image.fromURL(this.url, () => {
         this.onLoad();
         resolve();
@@ -113,25 +113,20 @@ export class ImageStore {
     image.scaleToHeight(this.height);
   }
 
-  private getSize(
-    scale = this.canvas.scale,
-  ): {width: number; height: number} {
-    const {
-      width: originalWidth,
-      height: originalHeight,
-    } = this.getOriginalSize();
+  private getSize(scale = this.canvas.scale): { width: number; height: number } {
+    const { width: originalWidth, height: originalHeight } = this.getOriginalSize();
 
     const containerHeight = 0.85 * window.innerHeight * scale;
     const ratio = originalWidth / originalHeight;
     const height = Math.min(containerHeight / ratio, containerHeight);
     const width = ratio * height;
-    return {width, height};
+    return { width, height };
   }
 
-  private getOriginalSize(): {width: number, height: number} {
+  private getOriginalSize(): { width: number; height: number } {
     const originalImage = new fabric.Image(this.element);
     originalImage.rotate(this.canvas.angle).setCoords();
-    const {width, height} = originalImage.getBoundingRect();
-    return {width, height};
+    const { width, height } = originalImage.getBoundingRect();
+    return { width, height };
   }
 }

@@ -90,7 +90,7 @@ export class TextStore {
   @action setTextAlign(textAlign: string | undefined): void {
     if (textAlign !== undefined) {
       this.textAlign = textAlign;
-      this.text.set({textAlign});
+      this.text.set({ textAlign });
       this.canvas.renderAll();
     }
   }
@@ -100,7 +100,7 @@ export class TextStore {
       this.text.scaleX = 1;
       this.text.scaleY = 1;
       this.text.defaultFontSize = fontSize;
-      this.text.set({fontSize});
+      this.text.set({ fontSize });
       this.canvas.renderAll();
       this.updateFontSize(fontSize);
     }
@@ -109,7 +109,7 @@ export class TextStore {
   @action setLineHeight(lineHeight: number | undefined): void {
     if (lineHeight) {
       this.lineHeight = lineHeight;
-      this.text.set({lineHeight: 1 + lineHeight / 10});
+      this.text.set({ lineHeight: 1 + lineHeight / 10 });
       this.canvas.renderAll();
     }
   }
@@ -117,7 +117,7 @@ export class TextStore {
   @action setFontColor(rgbCode: string): void {
     this.fontColorCode = rgbCode;
     this.text.fontColorCode = rgbCode;
-    this.text.set({fill: `rgb(${rgbCode})`});
+    this.text.set({ fill: `rgb(${rgbCode})` });
     this.canvas.renderAll();
   }
 
@@ -152,19 +152,19 @@ export class TextStore {
 
   @action private setFontWeight(fontWeight: FontWeight): void {
     this.fontWeight = fontWeight;
-    this.text.set({fontWeight});
+    this.text.set({ fontWeight });
     this.canvas.renderAll();
   }
 
   @action private setTextDecoration(underline: boolean | undefined): void {
     this.underline = underline;
-    this.text.set({underline});
+    this.text.set({ underline });
     this.canvas.renderAll();
   }
 
   @action private setFontStyle(fontStyle: FontStyle): void {
     this.fontStyle = fontStyle;
-    this.text.set({fontStyle});
+    this.text.set({ fontStyle });
     this.canvas.renderAll();
   }
 
@@ -210,7 +210,7 @@ export class TextStore {
     this.reactions = {
       onSelect: reaction(
         () => this.objectManager.selectedObject,
-        selectedObject => {
+        (selectedObject) => {
           if (selectedObject) {
             this.text = selectedObject as ITextObject;
             this.updateTextStyle();
@@ -220,10 +220,8 @@ export class TextStore {
 
       onBackgroundColorChange: reaction(
         () => [this.bgColorCode, this.isBgTransparent],
-        bgColor => {
-          this.text.set({textBackgroundColor:
-            `rgba(${bgColor[0]}, ${Number(!bgColor[1])})`,
-          });
+        (bgColor) => {
+          this.text.set({ textBackgroundColor: `rgba(${bgColor[0]}, ${Number(!bgColor[1])})` });
           this.canvas.renderAll();
         },
       ),
@@ -238,18 +236,7 @@ export class TextStore {
   }
 
   private updateTextStyle(): void {
-    let {
-      fontWeight,
-      underline,
-      fontStyle,
-      textAlign,
-      scaleX,
-      defaultFontSize,
-      lineHeight,
-      fontColorCode,
-      bgColorCode,
-      isBgTransparent,
-    } = this.text;
+    let { fontWeight, underline, fontStyle, textAlign, scaleX, defaultFontSize, lineHeight, fontColorCode, bgColorCode, isBgTransparent } = this.text;
 
     this.setTextStyle({
       fontWeight,
@@ -294,7 +281,7 @@ export class TextStore {
     } else if (corner === "mr" || corner === "ml") {
       target.scaleY = target.scaleX;
     }
-    const {scaleX = 1, defaultFontSize} = target;
+    const { scaleX = 1, defaultFontSize } = target;
     target.minScaleLimit = TextСonstants.MIN_FONT_SIZE / defaultFontSize;
     this.updateFontSize(defaultFontSize * scaleX);
   }

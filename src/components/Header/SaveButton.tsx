@@ -25,12 +25,7 @@ const SaveButton: React.FC = () => {
 
   return useObserver(() => (
     <Tooltip content="Save" placement="bottom">
-      <Save
-        className={`${
-          !imageStore.url || UIStore.isToolbarOpen ? "disabled" : ""
-        }`}
-        onClick={saveImage}
-      />
+      <Save className={`${!imageStore.url || UIStore.isToolbarOpen ? "disabled" : ""}`} onClick={saveImage} />
     </Tooltip>
   ));
 };

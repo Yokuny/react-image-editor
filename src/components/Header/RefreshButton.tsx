@@ -5,7 +5,7 @@ import { ReactComponent as Refresh } from "../../assets/refresh.svg";
 import useStore from "../../hooks/useStore";
 
 export const RefreshButton = () => {
-  const {UIStore, imageStore} = useStore();
+  const { UIStore, imageStore } = useStore();
   return useObserver(() => (
     <div>
       <Tooltip content="Refresh" placement="bottom">

@@ -1,8 +1,5 @@
-import {Command, CommandName} from "./commandHistory";
-import {
-  preventScaleReset,
-  disableHistoryRecording,
-} from "../helpers/decorators";
+import { Command, CommandName } from "./commandHistory";
+import { preventScaleReset, disableHistoryRecording } from "../helpers/decorators";
 import rootStore from "../stores/rootStore";
 import { EffectValue } from "../stores/effectsStore";
 
@@ -20,7 +17,7 @@ export class CropCommand implements Command {
     private imageUrl: string,
     private prevCanvasObjects: any[],
   ) {
-    const {canvasStore: canvas, imageStore: image} = rootStore;
+    const { canvasStore: canvas, imageStore: image } = rootStore;
     this.prevImageUrl = rootStore.imageStore.element.src;
     this.prevFlipX = canvas.flipX;
     this.prevFlipY = canvas.flipY;
@@ -31,7 +28,7 @@ export class CropCommand implements Command {
 
   async execute(): Promise<void> {
     try {
-      const {imageStore: image, UIStore, canvasStore} = rootStore;
+      const { imageStore: image, UIStore, canvasStore } = rootStore;
       await image.update(this.imageUrl);
       image.effects.savedValues = image.effects.getValues();
       if (UIStore.isToolbarOpen) {
@@ -59,13 +56,13 @@ export class CropCommand implements Command {
   }
 
   private restoreEffects(): void {
-    const {imageStore: image} = rootStore;
+    const { imageStore: image } = rootStore;
     image.effects.setValues(this.prevEffects);
     image.effects.savedValues = this.prevEffects;
   }
 
   private addObjectsToCanvas(): void {
-    this.prevCanvasObjects.forEach(obj => {
+    this.prevCanvasObjects.forEach((obj) => {
       if (obj.name !== rootStore.imageStore.OBJ_NAME) {
         rootStore.canvasStore.instance.add(obj);
       }

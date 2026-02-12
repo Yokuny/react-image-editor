@@ -1,4 +1,4 @@
-import {Command, CommandName} from "./commandHistory";
+import { Command, CommandName } from "./commandHistory";
 import { disableHistoryRecording } from "../helpers/decorators";
 import rootStore from "../stores/rootStore";
 

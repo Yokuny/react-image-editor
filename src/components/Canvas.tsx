@@ -15,14 +15,7 @@ const Canvas = () => {
     rootStore.addCanvasToDocument(canvasEl);
   }, [canvasEl]);
 
-  return useObserver(() => (
-    <section
-      className={`canvas custom-scrollbar ${
-        UIStore.isToolbarOpen ? "canvas_toolbar-open" : ""
-      }`}
-      ref={canvasRef}>
-    </section>
-  ));
+  return useObserver(() => <section className={`canvas custom-scrollbar ${UIStore.isToolbarOpen ? "canvas_toolbar-open" : ""}`} ref={canvasRef}></section>);
 };
 
 export default Canvas;

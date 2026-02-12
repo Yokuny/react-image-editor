@@ -1,10 +1,4 @@
-import {
-  observable,
-  action,
-  computed,
-  reaction,
-  IReactionDisposer,
-} from "mobx";
+import { observable, action, computed, reaction, IReactionDisposer } from "mobx";
 import { RootStore } from "./rootStore";
 
 import { ModeName } from "./canvasStore";
@@ -16,7 +10,7 @@ interface IDrawingMode {
   disable: () => void;
 }
 
-export type Reactions = {[reactionName: string]: IReactionDisposer} | null;
+export type Reactions = { [reactionName: string]: IReactionDisposer } | null;
 
 export class DrawingStore {
   @observable opacity: number = 1;
@@ -41,11 +35,7 @@ export class DrawingStore {
     root.objectManagerStore.registerObject(this.OBJ_NAME);
     this.canvas = root.canvasStore.instance;
     this.freeDrawing = new FreeDrawing(this.canvas, this);
-    this.straightLineDrawing = new StraightLineDrawing(
-      this.canvas,
-      root.objectManagerStore,
-      this,
-    );
+    this.straightLineDrawing = new StraightLineDrawing(this.canvas, root.objectManagerStore, this);
     this.currentMode = this.freeDrawing;
     root.canvasStore.registerSessionManager(this.OBJ_NAME, this);
   }
@@ -66,11 +56,7 @@ export class DrawingStore {
   @action toggleFreeDrawingMode(): void {
     this.isLineStraight = !this.isLineStraight;
     this.currentMode.disable();
-    this.updateMode(
-      this.isLineStraight
-      ? this.straightLineDrawing
-      : this.freeDrawing,
-    );
+    this.updateMode(this.isLineStraight ? this.straightLineDrawing : this.freeDrawing);
   }
 
   onSessionStart(): void {
@@ -87,12 +73,12 @@ export class DrawingStore {
     this.reactions = {
       onColorChange: reaction(
         () => this.color,
-        color => this.canvas.freeDrawingBrush.color = color,
+        (color) => (this.canvas.freeDrawingBrush.color = color),
       ),
 
       onAdded: reaction(
         () => this.root.objectManagerStore.notification,
-        notification => {
+        (notification) => {
           if (notification.type === "obj_added") {
             this.onAdded(notification.data);
           }
@@ -138,7 +124,6 @@ class FreeDrawing implements IDrawingMode {
   }
 }
 
-
 class StraightLineDrawing implements IDrawingMode {
   private line: fabric.Line | null = null;
   private listeners: any;
@@ -174,11 +159,10 @@ class StraightLineDrawing implements IDrawingMode {
   private handleMouseDown(event: fabric.IEvent): void {
     const pointer = this.canvas.getPointer(event.e);
 
-    this.line = new fabric.Line(
-      [pointer.x, pointer.y, pointer.x, pointer.y], {
-        stroke: this.store.color,
-        strokeWidth: this.store.lineWidth,
-        evented: false,
+    this.line = new fabric.Line([pointer.x, pointer.y, pointer.x, pointer.y], {
+      stroke: this.store.color,
+      strokeWidth: this.store.lineWidth,
+      evented: false,
     });
 
     this.canvas.add(this.line);
