@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { X } from "lucide-react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
@@ -10,6 +11,7 @@ import ToolbarRotate from "./ToolbarRotate";
 const Toolbar: React.FC = () => {
   const { isToolbarOpen, closeToolbar } = useUIStore();
   const { mode } = useCanvasStore();
+  const nodeRef = useRef(null);
 
   const contentMap: { [name: string]: React.JSX.Element } = {
     crop: <ToolbarCrop />,
@@ -20,8 +22,8 @@ const Toolbar: React.FC = () => {
   return (
     <TransitionGroup component={null}>
       {isToolbarOpen && (
-        <CSSTransition timeout={600} classNames="toolbar">
-          <section className="toolbar custom-scrollbar">
+        <CSSTransition nodeRef={nodeRef} timeout={600} classNames="toolbar">
+          <section ref={nodeRef} className="toolbar custom-scrollbar">
             <div className="toolbar__header">
               <h4 className="toolbar__title">{mode}</h4>
               <X
