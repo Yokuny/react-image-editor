@@ -88,25 +88,24 @@ export class CropCommand implements Command {
 
   private restoreEffects(): void {
     const updates: Record<string, any> = {};
-    this.prevEffects.forEach((eff) => {
+    for (const eff of this.prevEffects) {
       updates[eff.id] = eff.value;
-    });
+    }
     useAppStore.setState(updates);
   }
 
   private addObjectsToCanvas(): void {
     const store = useAppStore.getState();
-    if (store.fabricCanvas) {
-      this.prevCanvasObjects.forEach((obj) => {
-        // Check if obj is the main image? "OBJ_NAME" was in imageStore.
-        // Assuming we check name or type.
-        // For now, simple implementation.
-        if (obj && obj.type !== "image") {
-          // heavily simplified
-          store.fabricCanvas!.add(obj);
+    if (store.konvaStage) {
+      const layer = store.konvaStage.getLayers()[0];
+      if (layer) {
+        for (const obj of this.prevCanvasObjects) {
+          if (obj && obj.className !== "Image") {
+            layer.add(obj);
+          }
         }
-      });
-      store.fabricCanvas.renderAll();
+      }
+      store.konvaStage.batchDraw();
     }
   }
 }

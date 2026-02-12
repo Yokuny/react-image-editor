@@ -1,10 +1,15 @@
 import type React from "react";
 import { type ChangeEvent, useEffect, useState } from "react";
+import { CropCommand } from "../../command/crop";
 import { useCropperStore } from "../../hooks/useCropperStore";
+import { useAppStore } from "../../hooks/useAppStore";
+import { useImageStore } from "../../hooks/useImageStore";
 import { useUIStore } from "../../hooks/useUIStore";
 
 const ToolbarCrop: React.FC = () => {
-  const { cropZoneWidth, cropZoneHeight, setCropZoneWidth, setCropZoneHeight, setCropRatio, crop, activeInputName, setActiveInputName } = useCropperStore();
+  const { cropZoneWidth, cropZoneHeight, setCropZoneWidth, setCropZoneHeight, setCropX, setCropY, setCropRatio, crop, activeInputName, setActiveInputName, cropRatio } =
+    useCropperStore();
+  const { imageWidth, imageHeight } = useImageStore();
   const { closeToolbar } = useUIStore();
 
   const [ratio, setRatio] = useState("custom");
@@ -24,14 +29,65 @@ const ToolbarCrop: React.FC = () => {
 
   const updateCropZoneWidth = (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(event.target.value, 10) || 0;
-    setLocalWidth(value);
-    setCropZoneWidth(value);
+    const clampedWidth = Math.max(10, Math.min(value, imageWidth));
+    setLocalWidth(clampedWidth);
+    setCropZoneWidth(clampedWidth);
+
+    // Enforce aspect ratio
+    if (cropRatio) {
+      const newHeight = Math.round(clampedWidth / (cropRatio.width / cropRatio.height));
+      const clampedHeight = Math.max(10, Math.min(newHeight, imageHeight));
+      setCropZoneHeight(clampedHeight);
+      setLocalHeight(clampedHeight);
+    }
+
+    // Re-center
+    setCropX(Math.max(0, Math.round((imageWidth - clampedWidth) / 2)));
   };
 
   const updateCropZoneHeight = (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseInt(event.target.value, 10) || 0;
-    setLocalHeight(value);
-    setCropZoneHeight(value);
+    const clampedHeight = Math.max(10, Math.min(value, imageHeight));
+    setLocalHeight(clampedHeight);
+    setCropZoneHeight(clampedHeight);
+
+    // Enforce aspect ratio
+    if (cropRatio) {
+      const newWidth = Math.round(clampedHeight * (cropRatio.width / cropRatio.height));
+      const clampedWidth = Math.max(10, Math.min(newWidth, imageWidth));
+      setCropZoneWidth(clampedWidth);
+      setLocalWidth(clampedWidth);
+    }
+
+    // Re-center
+    setCropY(Math.max(0, Math.round((imageHeight - clampedHeight) / 2)));
+  };
+
+  const selectAspectRatio = (name: string, value: { width: number; height: number } | null) => {
+    setRatio(name);
+    setCropRatio(value);
+
+    if (value && imageWidth > 0 && imageHeight > 0) {
+      const ratioValue = value.width / value.height;
+      let cropW = imageWidth;
+      let cropH = imageWidth / ratioValue;
+      if (cropH > imageHeight) {
+        cropH = imageHeight;
+        cropW = imageHeight * ratioValue;
+      }
+      cropW = Math.round(cropW);
+      cropH = Math.round(cropH);
+      setCropZoneWidth(cropW);
+      setCropZoneHeight(cropH);
+      setCropX(Math.round((imageWidth - cropW) / 2));
+      setCropY(Math.round((imageHeight - cropH) / 2));
+    } else if (!value && imageWidth > 0 && imageHeight > 0) {
+      // Custom: reset to full image
+      setCropZoneWidth(imageWidth);
+      setCropZoneHeight(imageHeight);
+      setCropX(0);
+      setCropY(0);
+    }
   };
 
   const aspectRatioList = [
@@ -53,7 +109,8 @@ const ToolbarCrop: React.FC = () => {
           type="number"
           className="toolbar__form-input"
           value={Math.floor(localWidth)}
-          min={0}
+          min={10}
+          max={imageWidth}
           onChange={updateCropZoneWidth}
           onFocus={() => setActiveInputName("width")}
           onBlur={() => {
@@ -66,7 +123,8 @@ const ToolbarCrop: React.FC = () => {
           type="number"
           className="toolbar__form-input"
           value={Math.floor(localHeight)}
-          min={0}
+          min={10}
+          max={imageHeight}
           onChange={updateCropZoneHeight}
           onFocus={() => setActiveInputName("height")}
           onBlur={() => {
@@ -77,29 +135,32 @@ const ToolbarCrop: React.FC = () => {
       </div>
 
       <div className="toolbar__block">
-        <div className="toolbar__divider"></div>
+        <div className="toolbar__divider" />
         <p className="toolbar__block-title">Aspect Ratio</p>
         <div className="toolbar__options">
-          {aspectRatioList.map((aspectRatio, index) => {
-            return (
-              <div
-                key={index}
-                className={`toolbar__option ${ratio === aspectRatio.name ? "toolbar__option_active" : ""}`}
-                onClick={() => {
-                  setRatio(aspectRatio.name);
-                  setCropRatio(aspectRatio.value);
-                }}
-              >
-                {aspectRatio.name}
-              </div>
-            );
-          })}
+          {aspectRatioList.map((aspectRatio) => (
+            <button
+              type="button"
+              key={aspectRatio.name}
+              className={`toolbar__option ${ratio === aspectRatio.name ? "toolbar__option_active" : ""}`}
+              onClick={() => selectAspectRatio(aspectRatio.name, aspectRatio.value)}
+            >
+              {aspectRatio.name}
+            </button>
+          ))}
         </div>
       </div>
       <button
+        type="button"
         className="toolbar__action-btn"
         onClick={() => {
-          crop();
+          // Create command BEFORE crop — constructor captures prev state from store
+          const command = new CropCommand("", []);
+          crop(); // this updates imageUrl with cropped dataURL
+          // Update the command's imageUrl with the new (cropped) imageUrl
+          const newImageUrl = useAppStore.getState().imageUrl;
+          (command as any).imageUrl = newImageUrl;
+          useAppStore.getState().history.push(command);
           closeToolbar();
         }}
       >
