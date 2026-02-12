@@ -1,7 +1,11 @@
 {
-  "name": "image-editor",
+  "name": "react-image-editor",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yokuny/react-image-editor.git"
+  },
   "dependencies": {
     "@types/node": "^13.13.5",
     "@types/react": "^16.9.34",
