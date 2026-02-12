@@ -1,10 +1,4 @@
-import React from "react";
-import Bold from "../../assets/bold.svg";
-import Underline from "../../assets/underline.svg";
-import Italic from "../../assets/italic.svg";
-import AlignLeft from "../../assets/align-left.svg";
-import AlignCenter from "../../assets/align-center.svg";
-import AlignRight from "../../assets/align-right.svg";
+import { Bold, Underline, Italic, AlignLeft, AlignCenter, AlignRight } from "lucide-react";
 import Slider from "../Slider";
 import ColorPicker from "../ColorPicker";
 import ToggleButton from "../ToggleButton";
@@ -40,40 +34,40 @@ const ToolbarText: React.FC = () => {
 
   const options = [
     {
-      icon: <img src={Bold} alt="Bold" />,
+      icon: <Bold />,
       name: "fontWeight",
       handler: () => setFontWeight(fontWeight === "bold" ? "normal" : "bold"),
-      isActive: (val: string) => val === "bold",
+      isActive: (val: string | boolean | number) => val === "bold",
     },
     {
-      icon: <img src={Underline} alt="Underline" />,
+      icon: <Underline />,
       name: "underline",
       handler: () => setUnderline(!underline),
-      isActive: (val: boolean) => val,
+      isActive: (val: string | boolean | number) => val === true,
     },
     {
-      icon: <img src={Italic} alt="Italic" />,
+      icon: <Italic />,
       name: "fontStyle",
       handler: () => setFontStyle(fontStyle === "italic" ? "normal" : "italic"),
-      isActive: (val: string) => val === "italic",
+      isActive: (val: string | boolean | number) => val === "italic",
     },
     {
-      icon: <img src={AlignLeft} alt="Align Left" />,
+      icon: <AlignLeft />,
       name: "textAlign",
       handler: () => setTextAlign("left"),
-      isActive: (val: string) => val === "left",
+      isActive: (val: string | boolean | number) => val === "left",
     },
     {
-      icon: <img src={AlignCenter} alt="Align Center" />,
+      icon: <AlignCenter />,
       name: "textAlign",
       handler: () => setTextAlign("center"),
-      isActive: (val: string) => val === "center",
+      isActive: (val: string | boolean | number) => val === "center",
     },
     {
-      icon: <img src={AlignRight} alt="Align Right" />,
+      icon: <AlignRight />,
       name: "textAlign",
       handler: () => setTextAlign("right"),
-      isActive: (val: string) => val === "right",
+      isActive: (val: string | boolean | number) => val === "right",
     },
   ];
 
@@ -88,7 +82,7 @@ const ToolbarText: React.FC = () => {
             {options.map((option, index) => {
               const optionValue = option.name === "fontWeight" ? fontWeight : option.name === "underline" ? underline : option.name === "fontStyle" ? fontStyle : textAlign;
               return (
-                <div key={index} className={`toolbar__option ${option.isActive(optionValue as any) ? "toolbar__option_active" : ""}`} onClick={option.handler}>
+                <div key={index} className={`toolbar__option ${option.isActive(optionValue) ? "toolbar__option_active" : ""}`} onClick={option.handler}>
                   {option.icon}
                 </div>
               );

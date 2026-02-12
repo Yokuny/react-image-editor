@@ -1,9 +1,8 @@
-import React from "react";
+import { Redo2 } from "lucide-react";
 import Tooltip from "../Tooltip";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import { useAppStore } from "../../hooks/useAppStore";
-import Redo from "../../assets/redo.svg";
 
 export const RedoButton = () => {
   const { canRedo } = useUIStore();
@@ -12,9 +11,7 @@ export const RedoButton = () => {
   return (
     <div>
       <Tooltip content="Redo" placement="bottom">
-        <img
-          src={Redo}
-          alt="redo"
+        <Redo2
           className={`${!canRedo ? "disabled" : ""}`}
           onClick={() => {
             if (!canRedo || !fabricCanvas) {

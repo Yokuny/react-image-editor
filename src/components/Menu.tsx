@@ -1,9 +1,4 @@
-import React from "react";
-import Adjust from "../assets/adjust.svg";
-import Crop from "../assets/crop.svg";
-import Flip from "../assets/flip.svg";
-import Draw from "../assets/pencil.svg";
-import Text from "../assets/text.svg";
+import { Sliders, Crop, FlipHorizontal, Pencil, Type } from "lucide-react";
 import { useUIStore } from "../hooks/useUIStore";
 import { useCanvasStore } from "../hooks/useCanvasStore";
 import { useImageStore } from "../hooks/useImageStore";
@@ -38,27 +33,27 @@ const Menu: React.FC = () => {
 
   const items: IMenuItems[] = [
     {
-      icon: <img src={Crop} alt="crop" />,
+      icon: <Crop />,
       name: "crop",
       handler: () => handleClick("crop"),
     },
     {
-      icon: <img src={Flip} alt="adjust" />,
+      icon: <FlipHorizontal />,
       name: "adjust",
       handler: () => handleClick("adjust"),
     },
     {
-      icon: <img src={Draw} alt="drawing" />,
+      icon: <Pencil />,
       name: "drawing",
       handler: () => handleClick("drawing"),
     },
     {
-      icon: <img src={Text} alt="text" />,
+      icon: <Type />,
       name: "text",
       handler: () => handleClick("text"),
     },
     {
-      icon: <img src={Adjust} alt="effects" />,
+      icon: <Sliders />,
       name: "effects",
       handler: () => handleClick("effects"),
     },

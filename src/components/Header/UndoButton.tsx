@@ -1,4 +1,4 @@
-import Undo from "../../assets/undo.svg";
+import { Undo2 } from "lucide-react";
 import Tooltip from "../Tooltip";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
@@ -11,9 +11,7 @@ export const UndoButton = () => {
   return (
     <div>
       <Tooltip content="Undo" placement="bottom">
-        <img
-          src={Undo}
-          alt="undo"
+        <Undo2
           className={`${!canUndo ? "disabled" : ""}`}
           onClick={() => {
             if (!canUndo || !fabricCanvas) {

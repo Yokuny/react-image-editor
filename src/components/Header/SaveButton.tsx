@@ -1,5 +1,4 @@
-import React from "react";
-import Save from "../../assets/save.svg";
+import { Save } from "lucide-react";
 import Tooltip from "../Tooltip";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import { useUIStore } from "../../hooks/useUIStore";
@@ -27,7 +26,7 @@ const SaveButton: React.FC = () => {
 
   return (
     <Tooltip content="Save" placement="bottom">
-      <img src={Save} alt="save" className={`${!imageUrl || isToolbarOpen ? "disabled" : ""}`} onClick={saveImage} />
+      <Save className={`${!imageUrl || isToolbarOpen ? "disabled" : ""}`} onClick={saveImage} />
     </Tooltip>
   );
 };

@@ -1,11 +1,6 @@
-import React from "react";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import "rc-slider/assets/index.css";
-
-import Left from "../../assets/left.svg";
-import Right from "../../assets/right.svg";
-import FlipX from "../../assets/flipX.svg";
-import FlipY from "../../assets/flipY.svg";
+import { RotateCcw, RotateCw, FlipHorizontal, FlipVertical } from "lucide-react";
 import Slider from "../Slider";
 
 const ToolbarRotate: React.FC = () => {
@@ -35,19 +30,19 @@ const ToolbarRotate: React.FC = () => {
     <div className="toolbar__content">
       <div className="toolbar__options toolbar__options_one-col">
         <div className={`toolbar__option ${flipX ? "toolbar__option_active" : ""}`} onClick={() => setFlipX(!flipX)}>
-          <img src={FlipX} alt="flip-x" /> <p> Flip X</p>
+          <FlipHorizontal /> <p> Flip X</p>
         </div>
 
         <div className={`toolbar__option ${flipY ? "toolbar__option_active" : ""}`} onClick={() => setFlipY(!flipY)}>
-          <img src={FlipY} alt="flip-y" /> <p> Flip Y</p>
+          <FlipVertical /> <p> Flip Y</p>
         </div>
 
         <div className="toolbar__option" onClick={rotateLeft}>
-          <img src={Left} alt="rotate-left" /> <p> Rotate Left</p>
+          <RotateCcw /> <p> Rotate Left</p>
         </div>
 
         <div className="toolbar__option" onClick={rotateRight}>
-          <img src={Right} alt="rotate-right" /> <p> Rotate Right</p>
+          <RotateCw /> <p> Rotate Right</p>
         </div>
       </div>
       <Slider

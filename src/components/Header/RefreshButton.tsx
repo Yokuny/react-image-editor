@@ -1,22 +1,19 @@
-import React from "react";
+import { RotateCcw } from "lucide-react";
 import Tooltip from "../Tooltip";
-import Refresh from "../../assets/refresh.svg";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useImageStore } from "../../hooks/useImageStore";
 
 export const RefreshButton = () => {
   const { closeToolbar } = useUIStore();
-  const { url, resetImage } = useImageStore();
+  const { imageUrl, resetImage } = useImageStore();
 
   return (
     <div>
       <Tooltip content="Refresh" placement="bottom">
-        <img
-          src={Refresh}
-          alt="refresh"
-          className={`${!url ? "disabled" : ""}`}
+        <RotateCcw
+          className={`${!imageUrl ? "disabled" : ""}`}
           onClick={() => {
-            if (!url) {
+            if (!imageUrl) {
               return;
             }
             resetImage();

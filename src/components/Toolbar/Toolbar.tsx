@@ -1,6 +1,5 @@
-import React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Close from "../../assets/close.svg";
+import { X } from "lucide-react";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 
@@ -29,9 +28,7 @@ const Toolbar: React.FC = () => {
           <section className="toolbar custom-scrollbar">
             <div className="toolbar__header">
               <h4 className="toolbar__title">{mode}</h4>
-              <img
-                src={Close}
-                alt="close"
+              <X
                 onClick={() => {
                   // Logic for resetToBaseScale could be handled in closeToolbar action if desired
                   closeToolbar();

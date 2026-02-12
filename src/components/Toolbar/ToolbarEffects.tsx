@@ -1,4 +1,3 @@
-import React from "react";
 import Slider from "../Slider";
 import ColorPicker from "../ColorPicker";
 import { hexToRgb } from "../../helpers/colorConverter";

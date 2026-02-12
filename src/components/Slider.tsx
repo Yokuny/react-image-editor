@@ -1,4 +1,3 @@
-import React from "react";
 import RcSlider from "rc-slider";
 
 type Props = {

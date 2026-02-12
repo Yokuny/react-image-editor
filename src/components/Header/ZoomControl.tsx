@@ -1,6 +1,4 @@
-import React from "react";
-import Plus from "../../assets/plus.svg";
-import Minus from "../../assets/minus.svg";
+import { Plus, Minus } from "lucide-react";
 import Tooltip from "../Tooltip";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import { useImageStore } from "../../hooks/useImageStore";
@@ -25,13 +23,13 @@ const ZoomControl: React.FC = () => {
     <div className="zoom-control">
       <button className="zoom-control__zoom-in" onClick={increaseScale}>
         <Tooltip content="Zoom In" placement="top">
-          <img src={Plus} alt="zoom in" />
+          <Plus />
         </Tooltip>
       </button>
       <p className="zoom-control__value">{`${Math.floor(scale * 100)}%`}</p>
       <button className="zoom-control__zoom-out" onClick={decreaseScale}>
         <Tooltip content="Zoom Out" placement="top">
-          <img src={Minus} alt="zoom out" />
+          <Minus />
         </Tooltip>
       </button>
     </div>

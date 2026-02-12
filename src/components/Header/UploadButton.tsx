@@ -1,12 +1,12 @@
-import React, { useRef, ChangeEvent } from "react";
-import Upload from "../../assets/upload.svg";
+import { useRef, ChangeEvent } from "react";
+import { Upload } from "lucide-react";
 import Tooltip from "../Tooltip";
 import { useUIStore } from "../../hooks/useUIStore";
 import { useImageStore } from "../../hooks/useImageStore";
 
 const UploadButton = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { setImageUrl, setImageUrl: load } = useImageStore(); // Note: simplifying load for now
+  const { setImageUrl } = useImageStore();
   const { closeToolbar } = useUIStore();
 
   const uploadImage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +35,7 @@ const UploadButton = () => {
   return (
     <>
       <Tooltip content="Upload an image" placement="bottom">
-        <img src={Upload} alt="upload" onClick={clickHandler} />
+        <Upload onClick={clickHandler} />
       </Tooltip>
       <input ref={inputFileRef} type="file" className="header__upload-image-input" onChange={uploadImage} accept="image/jpeg" />
     </>
