@@ -28,14 +28,14 @@ export class EffectCommand implements Command {
   setEffect(values: EffectValue[]): void {
     const store = useAppStore.getState();
     const updates: Record<string, number> = {};
-    values.forEach(({ id, value }) => {
+    for (const { id, value } of values) {
       updates[id] = value;
-    });
+    }
     // This is a direct state update, bypassing specific setters if they have side effects beyond setting state.
     // However, specific setters call renderAll(), which we likely want.
     // So we should probably call specific setters or a bulk update method.
     // For now, let's just use setState and force a render.
     useAppStore.setState(updates);
-    store.fabricCanvas?.renderAll();
+    store.konvaStage?.batchDraw();
   }
 }

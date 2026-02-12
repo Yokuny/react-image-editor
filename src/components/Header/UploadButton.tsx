@@ -37,7 +37,7 @@ const UploadButton = () => {
       <Tooltip content="Upload an image" placement="bottom">
         <Upload onClick={clickHandler} />
       </Tooltip>
-      <input ref={inputFileRef} type="file" className="header__upload-image-input" onChange={uploadImage} accept="image/jpeg" />
+      <input ref={inputFileRef} type="file" className="header__upload-image-input" onChange={uploadImage} accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" />
     </>
   );
 };
