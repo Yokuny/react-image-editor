@@ -7,9 +7,9 @@ export const useCanvasStore = () => {
   const flipX = useAppStore((state: AppState) => state.flipX);
   const flipY = useAppStore((state: AppState) => state.flipY);
   const mode = useAppStore((state: AppState) => state.mode);
-  const fabricCanvas = useAppStore((state: AppState) => state.fabricCanvas);
+  const konvaStage = useAppStore((state: AppState) => state.konvaStage);
 
-  const setFabricCanvas = useAppStore((state: AppState) => state.setFabricCanvas);
+  const setKonvaStage = useAppStore((state: AppState) => state.setKonvaStage);
   const setScale = useAppStore((state: AppState) => state.setScale);
   const setAngle = useAppStore((state: AppState) => state.setAngle);
   const setFlipX = useAppStore((state: AppState) => state.setFlipX);
@@ -22,8 +22,8 @@ export const useCanvasStore = () => {
     flipX,
     flipY,
     mode,
-    fabricCanvas,
-    setFabricCanvas,
+    konvaStage,
+    setKonvaStage,
     setScale,
     setAngle,
     setFlipX,

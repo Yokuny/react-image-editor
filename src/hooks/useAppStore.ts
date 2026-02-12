@@ -1,4 +1,4 @@
-import type * as fabric from "fabric";
+import type Konva from "konva";
 import { create } from "zustand";
 import { History } from "../command/commandHistory";
 
@@ -14,7 +14,7 @@ export interface AppState {
   flipX: boolean;
   flipY: boolean;
   mode: ModeName;
-  fabricCanvas: fabric.Canvas | null;
+  konvaStage: Konva.Stage | null;
 
   // UI State
   isToolbarOpen: boolean;
@@ -23,16 +23,16 @@ export interface AppState {
 
   // Image State
   imageUrl: string;
-  imageInstance: fabric.Image | null;
+  imageInstance: HTMLImageElement | null;
   imageWidth: number;
   imageHeight: number;
 
   // Object Manager State
-  selectedObject: fabric.Object | null;
+  selectedObject: Konva.Node | null;
   notification: { type: string; data: unknown };
 
   // Actions
-  setFabricCanvas: (canvas: fabric.Canvas) => void;
+  setKonvaStage: (stage: Konva.Stage) => void;
   setScale: (scale: number) => void;
   setAngle: (angle: number) => void;
   setFlipX: (flipX: boolean) => void;
@@ -43,7 +43,7 @@ export interface AppState {
   updateHistoryButtons: (canUndo: boolean, canRedo: boolean) => void;
 
   setImageUrl: (url: string) => void;
-  setImageInstance: (instance: fabric.Image | null) => void;
+  setImageInstance: (instance: HTMLImageElement | null) => void;
   setImageSize: (width: number, height: number) => void;
 
   // Effects State
@@ -74,17 +74,21 @@ export interface AppState {
   // Cropper State
   cropZoneWidth: number;
   cropZoneHeight: number;
+  cropX: number;
+  cropY: number;
   cropRatio: { width: number; height: number } | null;
   activeInputName: string;
 
   setCropZoneWidth: (width: number) => void;
   setCropZoneHeight: (height: number) => void;
+  setCropX: (x: number) => void;
+  setCropY: (y: number) => void;
   setCropRatio: (ratio: { width: number; height: number } | null) => void;
   setActiveInputName: (name: string) => void;
   crop: () => void;
   resetImage: () => void;
 
-  setSelectedObject: (obj: fabric.Object | null) => void;
+  setSelectedObject: (obj: Konva.Node | null) => void;
   setNotification: (notification: { type: string; data: unknown }) => void;
 }
 
@@ -96,7 +100,7 @@ export const useAppStore = create<AppState>((set) => ({
   flipX: false,
   flipY: false,
   mode: "",
-  fabricCanvas: null,
+  konvaStage: null,
   isToolbarOpen: false,
   canUndo: false,
   canRedo: false,
@@ -118,37 +122,56 @@ export const useAppStore = create<AppState>((set) => ({
   pixelate: 1,
   cropZoneWidth: 0,
   cropZoneHeight: 0,
+  cropX: 0,
+  cropY: 0,
   cropRatio: null,
   activeInputName: "",
 
   // Actions
   setCropZoneWidth: (cropZoneWidth) => set({ cropZoneWidth }),
   setCropZoneHeight: (cropZoneHeight) => set({ cropZoneHeight }),
+  setCropX: (cropX) => set({ cropX }),
+  setCropY: (cropY) => set({ cropY }),
   setCropRatio: (cropRatio) => set({ cropRatio }),
   setActiveInputName: (activeInputName) => set({ activeInputName }),
   crop: () =>
     set((state) => {
-      if (state.fabricCanvas && state.imageInstance) {
-        console.log("Cropping image with:", state.cropZoneWidth, state.cropZoneHeight);
-        state.fabricCanvas.renderAll();
+      if (state.imageInstance && state.cropZoneWidth > 0 && state.cropZoneHeight > 0) {
+        const img = state.imageInstance;
+        const cw = Math.min(state.cropZoneWidth, img.naturalWidth);
+        const ch = Math.min(state.cropZoneHeight, img.naturalHeight);
+        const cx = Math.max(0, Math.min(state.cropX, img.naturalWidth - cw));
+        const cy = Math.max(0, Math.min(state.cropY, img.naturalHeight - ch));
+
+        const offscreen = document.createElement("canvas");
+        offscreen.width = cw;
+        offscreen.height = ch;
+        const ctx = offscreen.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, cx, cy, cw, ch, 0, 0, cw, ch);
+          const dataUrl = offscreen.toDataURL("image/png");
+          return {
+            imageUrl: dataUrl,
+            imageWidth: cw,
+            imageHeight: ch,
+            angle: 0,
+            scale: 1,
+            flipX: false,
+            flipY: false,
+          };
+        }
       }
       return {};
     }),
   resetImage: () =>
-    set((state) => {
-      if (state.fabricCanvas && state.imageUrl) {
-        console.log("Resetting image to:", state.imageUrl);
-        state.fabricCanvas.clear();
-      }
-      return {
-        angle: 0,
-        scale: 1,
-        flipX: false,
-        flipY: false,
-      };
-    }),
+    set(() => ({
+      angle: 0,
+      scale: 1,
+      flipX: false,
+      flipY: false,
+    })),
 
-  setFabricCanvas: (canvas) => set({ fabricCanvas: canvas }),
+  setKonvaStage: (stage) => set({ konvaStage: stage }),
   setScale: (scale) => set({ scale }),
   setAngle: (angle) => set({ angle }),
   setFlipX: (flipX) => set({ flipX }),
@@ -168,52 +191,52 @@ export const useAppStore = create<AppState>((set) => ({
 
   setBrightness: (brightness) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { brightness };
     }),
   setContrast: (contrast) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { contrast };
     }),
   setSaturation: (saturation) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { saturation };
     }),
   setTintColor: (tintColor) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { tintColor };
     }),
   setTintOpacity: (tintOpacity) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { tintOpacity };
     }),
   setInvert: (invert) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { invert };
     }),
   setHue: (hue) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { hue };
     }),
   setNoise: (noise) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { noise };
     }),
   setBlur: (blur) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { blur };
     }),
   setPixelate: (pixelate) =>
     set((state) => {
-      state.fabricCanvas?.renderAll();
+      state.konvaStage?.batchDraw();
       return { pixelate };
     }),
   resetEffects: () =>

@@ -1,11 +1,12 @@
 {
   "dependencies": {
-    "fabric": "^7.1.0",
+    "konva": "^10.2.0",
     "lucide-react": "^0.563.0",
     "normalize.css": "^8.0.1",
     "rc-slider": "^11.1.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-konva": "^19.2.2",
     "react-transition-group": "^4.4.5",
     "zustand": "^5.0.11"
   },
