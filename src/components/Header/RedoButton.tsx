@@ -6,7 +6,7 @@ import Tooltip from "../Tooltip";
 
 export const RedoButton = () => {
   const { canRedo } = useUIStore();
-  const { fabricCanvas } = useCanvasStore();
+  const { konvaStage } = useCanvasStore();
 
   return (
     <div>
@@ -14,7 +14,7 @@ export const RedoButton = () => {
         <Redo2
           className={`${!canRedo ? "disabled" : ""}`}
           onClick={() => {
-            if (!canRedo || !fabricCanvas) {
+            if (!canRedo || !konvaStage) {
               return;
             }
             useAppStore.getState().history.redo();

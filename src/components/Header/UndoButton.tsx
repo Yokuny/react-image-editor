@@ -6,7 +6,7 @@ import Tooltip from "../Tooltip";
 
 export const UndoButton = () => {
   const { canUndo } = useUIStore();
-  const { fabricCanvas } = useCanvasStore();
+  const { konvaStage } = useCanvasStore();
 
   return (
     <div>
@@ -14,7 +14,7 @@ export const UndoButton = () => {
         <Undo2
           className={`${!canUndo ? "disabled" : ""}`}
           onClick={() => {
-            if (!canUndo || !fabricCanvas) {
+            if (!canUndo || !konvaStage) {
               return;
             }
             useAppStore.getState().history.undo();
