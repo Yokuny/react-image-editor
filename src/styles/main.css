@@ -1,31 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
-
-@import "./variables";
-@import "./components/app";
-@import "./components/header";
-@import "./components/menu";
-@import "./components/tooltip.scss";
-
-@import "./components/canvas.scss";
-@import "./components/toolbar.scss";
+@import "./variables.css";
+@import "./components/App.css";
+@import "./components/header.css";
+@import "./components/Menu.css";
+@import "./components/tooltip.css";
+@import "./components/canvas.css";
+@import "./components/toolbar.css";
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: $base-font-family;
-  font-size: $base-font-size;
-  background-color: $main-bg;
+  font-family: var(--base-font-family);
+  font-size: var(--base-font-size);
+  background-color: var(--main-bg);
   overflow: hidden;
 }
 
 svg {
-  fill: $text-color;
+  fill: var(--text-color);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: $text-color;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-color);
   margin: 0;
 }
 
@@ -44,42 +46,42 @@ button {
 }
 
 input {
-  color: $text-color;
+  color: var(--text-color);
 }
 
-input[type=number] {
-  color:#969696;
-  transition: all .2s;
+input[type="number"] {
+  color: #969696;
+  transition: all 0.2s;
   &:focus {
-    border: 0.156vw solid $text-color;
+    border: 0.156vw solid var(--text-color);
     outline: none;
-    color: $text-color;
+    color: var(--text-color);
   }
   &:hover {
-    color: $text-color;
+    color: var(--text-color);
   }
 }
 
-input[type=color] {
-	-webkit-appearance: none;
-	border: none;
-	width: 100%;
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 100%;
   height: 100%;
   padding: 0;
   cursor: pointer;
   background-color: transparent;
-  transition: all .3s;
+  transition: all 0.3s;
   &:focus {
     outline: none;
   }
 }
 
-input[type=color]::-webkit-color-swatch-wrapper {
-	padding: 0;
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
 }
 
-input[type=color]::-webkit-color-swatch {
-	border: none;
+input[type="color"]::-webkit-color-swatch {
+  border: none;
 }
 
 .hidden {
@@ -89,12 +91,12 @@ input[type=color]::-webkit-color-swatch {
 .custom-scrollbar::-webkit-scrollbar {
   width: 0.469vw;
   height: 0.469vw;
-  background: $menu-bg;
+  background: var(--menu-bg);
   border-radius: 0.391vw;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: $text-color;
+  background: var(--text-color);
   border-radius: 0.391vw;
 }
 
@@ -142,7 +144,7 @@ input[type=color]::-webkit-color-swatch {
   width: 2.734vw;
   height: 0.938vw;
   border-radius: 0.625vw;
-  background: $border-color;
+  background: var(--border-color);
   vertical-align: middle;
   position: relative;
   cursor: pointer;
@@ -152,7 +154,7 @@ input[type=color]::-webkit-color-swatch {
   outline: 0;
   text-align: center;
   -webkit-appearance: none;
-  box-shadow: inset 0 0.078vw 0.156vw rgba(0,0,0,.1);
+  box-shadow: inset 0 0.078vw 0.156vw rgba(0, 0, 0, 0.1);
   &:before {
     content: "";
     display: block;
@@ -176,7 +178,7 @@ input[type=color]::-webkit-color-swatch {
     top: 50%;
     left: -0.234vw;
     transition: all 350ms cubic-bezier(0, 0.95, 0.38, 0.98), background 150ms ease;
-    background: $disabled-color;
+    background: var(--disabled-color);
     border: 0.078vw solid rgba(0, 0, 0, 0.1);
     transform: translate3d(0, -50%, 0);
   }
@@ -188,7 +190,7 @@ input[type=color]::-webkit-color-swatch {
       transform: translate3d(100%, -50%, 0) scale(1);
     }
     &:after {
-      background: $text-color;
+      background: var(--text-color);
       transform: translate3d(100%, -50%, 0);
     }
   }
@@ -198,10 +200,10 @@ input[type=color]::-webkit-color-swatch {
 }
 
 .disabled {
-  fill: $disabled-color;
+  fill: var(--disabled-color);
   cursor: default;
   svg {
-    fill: $disabled-color;
+    fill: var(--disabled-color);
   }
 }
 
@@ -209,7 +211,7 @@ input[type=color]::-webkit-color-swatch {
   .rc-slider-rail {
     position: absolute;
     width: 100%;
-    background-color: $border-color;
+    background-color: var(--border-color);
     height: 0.313vw;
     border-radius: 0.469vw;
   }
@@ -218,7 +220,7 @@ input[type=color]::-webkit-color-swatch {
     border: none;
     width: 1.09375vw;
     height: 1.09375vw;
-    margin-top: -.390625vw;
+    margin-top: -0.390625vw;
     &:active {
       box-shadow: none;
       border-color: none;
@@ -230,7 +232,7 @@ input[type=color]::-webkit-color-swatch {
   }
 
   .rc-slider-track {
-    background-color: $text-color;
-    height: .3125vw;
+    background-color: var(--text-color);
+    height: 0.3125vw;
   }
 }
