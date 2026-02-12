@@ -24,13 +24,13 @@ const initialElementData: IElementData = {
 };
 
 export class TooltipPosition {
-  private placement: string = "";
+  private placement = "";
   private tooltipElement: HTMLDivElement | null = null;
   private triangleElement: HTMLDivElement | null = null;
   private targetEl: IElementData = { ...initialElementData };
   private tooltip: IElementData = { ...initialElementData };
   private bodyWidth: number = document.body.offsetWidth;
-  private offset: number = 10;
+  private offset = 10;
 
   setTooltipPosition(placement: string, targetEl: HTMLDivElement | null, tooltip: HTMLDivElement | null, triangle: HTMLDivElement | null): void {
     if (!tooltip || !targetEl || !triangle) {

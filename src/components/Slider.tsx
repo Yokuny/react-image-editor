@@ -1,4 +1,5 @@
 import RcSlider from "rc-slider";
+import type { JSX } from "react";
 
 type Props = {
   title: string;
@@ -20,7 +21,19 @@ const Slider: React.FC<Props> = (props) => {
         <p className="slider__title">{title}</p>
         <span className="slider__input">{value}</span>
       </div>
-      <RcSlider value={value} min={min} max={max} startPoint={startPoint} step={step} onChange={(num) => callback(num)} marks={marks} />
+      <RcSlider
+        value={value}
+        min={min}
+        max={max}
+        startPoint={startPoint}
+        step={step}
+        onChange={(val) => {
+          if (typeof val === "number") {
+            callback(val);
+          }
+        }}
+        marks={marks}
+      />
     </div>
   );
 };

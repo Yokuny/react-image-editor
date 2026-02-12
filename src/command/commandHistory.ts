@@ -1,6 +1,6 @@
 import { useAppStore } from "../hooks/useAppStore";
 
-export type CommandName = "crop" | "effect" | "flip" | "rotate" | "add_object" | "remove_object" | "set_image";
+export type CommandName = "crop" | "effect" | "flip" | "rotate" | "set_image";
 
 export interface Command {
   name: CommandName;
@@ -11,12 +11,12 @@ export interface Command {
 const DEBUG = true;
 
 export class History {
-  isCommandInProgress: boolean = false;
+  isCommandInProgress = false;
   private history: Command[] = [];
-  private currentCommandIndex: number = -1;
-  private canUndo: boolean = false;
-  private canRedo: boolean = false;
-  private canAddCommands: boolean = true;
+  private currentCommandIndex = -1;
+  private canUndo = false;
+  private canRedo = false;
+  private canAddCommands = true;
   private readonly MAX_HISTORY_LENGTH: number = 50;
 
   push(command: Command): void {

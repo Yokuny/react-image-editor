@@ -6,47 +6,47 @@
   padding: 0.625vw 2.344vw;
   border-radius: 0.391vw;
   font-size: 0.9em;
+}
 
-  &__triangle {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-  }
+.tooltip__triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
 
-  &_right .tooltip__triangle {
-    border-width: 0.586vw 0.781vw 0.586vw 0;
-    border-color: transparent var(--text-color) transparent transparent;
-    top: 50%;
-    right: 100%;
-    transform: translateY(-50%);
-  }
+.tooltip_right .tooltip__triangle {
+  border-width: 0.586vw 0.781vw 0.586vw 0;
+  border-color: transparent var(--text-color) transparent transparent;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+}
 
-  &_left .tooltip__triangle {
-    border-width: 0.586vw 0 0.586vw 0.781vw;
-    border-color: transparent transparent transparent var(--text-color);
-    top: 50%;
-    left: 100%;
-    transform: translateY(-50%);
-  }
+.tooltip_left .tooltip__triangle {
+  border-width: 0.586vw 0 0.586vw 0.781vw;
+  border-color: transparent transparent transparent var(--text-color);
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+}
 
-  &_bottom .tooltip__triangle {
-    border-width: 0 0.586vw 0.781vw 0.586vw;
-    border-color: transparent transparent var(--text-color) transparent;
-    left: 50%;
-    bottom: 100%;
-    transform: translateX(-50%);
-  }
+.tooltip_bottom .tooltip__triangle {
+  border-width: 0 0.586vw 0.781vw 0.586vw;
+  border-color: transparent transparent var(--text-color) transparent;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+}
 
-  &_top .tooltip__triangle {
-    border-width: 0.781vw 0.586vw 0 0.586vw;
-    border-color: var(--text-color) transparent transparent transparent;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+.tooltip_top .tooltip__triangle {
+  border-width: 0.781vw 0.586vw 0 0.586vw;
+  border-color: var(--text-color) transparent transparent transparent;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-  &__container {
-    position: relative;
-  }
+.tooltip__container {
+  position: relative;
 }

@@ -1,13 +1,11 @@
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { X } from "lucide-react";
-import { useUIStore } from "../../hooks/useUIStore";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
+import { useUIStore } from "../../hooks/useUIStore";
 
 import ToolbarCrop from "./ToolbarCrop";
-import ToolbarDrawing from "./ToolbarDrawing";
 import ToolbarEffects from "./ToolbarEffects";
 import ToolbarRotate from "./ToolbarRotate";
-import ToolbarText from "./ToolbarText";
 
 const Toolbar: React.FC = () => {
   const { isToolbarOpen, closeToolbar } = useUIStore();
@@ -16,8 +14,6 @@ const Toolbar: React.FC = () => {
   const contentMap: { [name: string]: React.JSX.Element } = {
     crop: <ToolbarCrop />,
     adjust: <ToolbarRotate />,
-    drawing: <ToolbarDrawing />,
-    text: <ToolbarText />,
     effects: <ToolbarEffects />,
   };
 
@@ -30,7 +26,6 @@ const Toolbar: React.FC = () => {
               <h4 className="toolbar__title">{mode}</h4>
               <X
                 onClick={() => {
-                  // Logic for resetToBaseScale could be handled in closeToolbar action if desired
                   closeToolbar();
                 }}
               />

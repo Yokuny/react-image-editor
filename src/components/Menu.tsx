@@ -1,8 +1,8 @@
-import { Sliders, Crop, FlipHorizontal, Pencil, Type } from "lucide-react";
-import { useUIStore } from "../hooks/useUIStore";
+import { Crop, FlipHorizontal, Sliders } from "lucide-react";
+import type { ModeName } from "../hooks/useAppStore";
 import { useCanvasStore } from "../hooks/useCanvasStore";
 import { useImageStore } from "../hooks/useImageStore";
-import type { ModeName } from "../hooks/useAppStore";
+import { useUIStore } from "../hooks/useUIStore";
 import Tooltip from "./Tooltip";
 
 interface IMenuItems {
@@ -41,16 +41,6 @@ const Menu: React.FC = () => {
       icon: <FlipHorizontal />,
       name: "adjust",
       handler: () => handleClick("adjust"),
-    },
-    {
-      icon: <Pencil />,
-      name: "drawing",
-      handler: () => handleClick("drawing"),
-    },
-    {
-      icon: <Type />,
-      name: "text",
-      handler: () => handleClick("text"),
     },
     {
       icon: <Sliders />,

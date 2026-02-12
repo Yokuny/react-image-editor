@@ -1,7 +1,7 @@
-import { useRef, useEffect } from "react";
-import { useUIStore } from "../hooks/useUIStore";
+import * as fabric from "fabric";
+import { useEffect, useRef } from "react";
 import { useCanvasStore } from "../hooks/useCanvasStore";
-import { fabric } from "fabric";
+import { useUIStore } from "../hooks/useUIStore";
 
 const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

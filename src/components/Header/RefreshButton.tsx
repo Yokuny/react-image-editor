@@ -1,7 +1,7 @@
 import { RotateCcw } from "lucide-react";
-import Tooltip from "../Tooltip";
-import { useUIStore } from "../../hooks/useUIStore";
 import { useImageStore } from "../../hooks/useImageStore";
+import { useUIStore } from "../../hooks/useUIStore";
+import Tooltip from "../Tooltip";
 
 export const RefreshButton = () => {
   const { closeToolbar } = useUIStore();

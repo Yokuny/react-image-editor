@@ -1,8 +1,8 @@
-import { useRef, ChangeEvent } from "react";
 import { Upload } from "lucide-react";
-import Tooltip from "../Tooltip";
-import { useUIStore } from "../../hooks/useUIStore";
+import { type ChangeEvent, useRef } from "react";
 import { useImageStore } from "../../hooks/useImageStore";
+import { useUIStore } from "../../hooks/useUIStore";
+import Tooltip from "../Tooltip";
 
 const UploadButton = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);

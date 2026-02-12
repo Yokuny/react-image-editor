@@ -1,5 +1,5 @@
-import { Command, CommandName } from "./commandHistory";
-import { preventScaleReset, disableHistoryRecording } from "../helpers/decorators";
+import { disableHistoryRecording, preventScaleReset } from "../helpers/decorators";
+import type { Command, CommandName } from "./commandHistory";
 
 export class FlipCommand implements Command {
   name: CommandName = "flip";

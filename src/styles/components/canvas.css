@@ -9,14 +9,14 @@
   transform: translateX(0);
   width: 100%;
   height: 88vh;
+}
 
-  &-container {
-    align-self: center;
-    justify-self: center;
-  }
+.canvas-container {
+  align-self: center;
+  justify-self: center;
+}
 
-  &_toolbar-open {
-    transform: translateX(25%);
-    width: calc(100vw - 100vw / 16 * 4);
-  }
+.canvas_toolbar-open {
+  transform: translateX(25%);
+  width: calc(100vw - 100vw / 16 * 4);
 }

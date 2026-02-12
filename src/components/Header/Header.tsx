@@ -1,9 +1,9 @@
-import UploadButton from "./UploadButton";
-import SaveButton from "./SaveButton";
-import RedoButton from "./RedoButton";
-import UndoButton from "./UndoButton";
-import ZoomControl from "./ZoomControl";
 import { useUIStore } from "../../hooks/useUIStore";
+import RedoButton from "./RedoButton";
+import SaveButton from "./SaveButton";
+import UndoButton from "./UndoButton";
+import UploadButton from "./UploadButton";
+import ZoomControl from "./ZoomControl";
 
 const Header: React.FC = () => {
   const { isToolbarOpen } = useUIStore();

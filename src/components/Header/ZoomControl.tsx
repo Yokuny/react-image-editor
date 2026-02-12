@@ -1,7 +1,7 @@
-import { Plus, Minus } from "lucide-react";
-import Tooltip from "../Tooltip";
+import { Minus, Plus } from "lucide-react";
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import { useImageStore } from "../../hooks/useImageStore";
+import Tooltip from "../Tooltip";
 
 const ZoomControl: React.FC = () => {
   const { scale, setScale, mode } = useCanvasStore();

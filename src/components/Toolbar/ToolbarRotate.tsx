@@ -1,6 +1,6 @@
 import { useCanvasStore } from "../../hooks/useCanvasStore";
 import "rc-slider/assets/index.css";
-import { RotateCcw, RotateCw, FlipHorizontal, FlipVertical } from "lucide-react";
+import { FlipHorizontal, FlipVertical, RotateCcw, RotateCw } from "lucide-react";
 import Slider from "../Slider";
 
 const ToolbarRotate: React.FC = () => {

@@ -1,7 +1,7 @@
-import Slider from "../Slider";
-import ColorPicker from "../ColorPicker";
 import { hexToRgb } from "../../helpers/colorConverter";
 import { useEffectsStore } from "../../hooks/useEffectsStore";
+import ColorPicker from "../ColorPicker";
+import Slider from "../Slider";
 
 export const ToolbarEffects = () => {
   const {

@@ -1,4 +1,5 @@
-import React, { type ChangeEvent, useEffect, useState } from "react";
+import type React from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import { useCropperStore } from "../../hooks/useCropperStore";
 import { useUIStore } from "../../hooks/useUIStore";
 
@@ -22,13 +23,13 @@ const ToolbarCrop: React.FC = () => {
   }, [cropZoneWidth, cropZoneHeight, activeInputName]);
 
   const updateCropZoneWidth = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value, 10) || 0;
+    const value = Number.parseInt(event.target.value, 10) || 0;
     setLocalWidth(value);
     setCropZoneWidth(value);
   };
 
   const updateCropZoneHeight = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value, 10) || 0;
+    const value = Number.parseInt(event.target.value, 10) || 0;
     setLocalHeight(value);
     setCropZoneHeight(value);
   };

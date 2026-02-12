@@ -1,26 +1,33 @@
-import { Command, CommandName } from "./commandHistory";
 import { preventScaleReset } from "../helpers/decorators";
-import rootStore from "../stores/rootStore";
+import { useAppStore } from "../hooks/useAppStore";
+import type { Command, CommandName } from "./commandHistory";
 
 export class RotationCommand implements Command {
   name: CommandName = "rotate";
 
-  constructor(
-    private prevAngle: number,
-    private angle: number,
-    private prevBaseScale: number,
-    private baseScale: number,
-  ) {}
+  private prevAngle: number;
+  private angle: number;
+  private prevBaseScale: number;
+  private baseScale: number;
+
+  constructor(prevAngle: number, angle: number, prevBaseScale: number, baseScale: number) {
+    this.prevAngle = prevAngle;
+    this.angle = angle;
+    this.prevBaseScale = prevBaseScale;
+    this.baseScale = baseScale;
+  }
 
   @preventScaleReset
   execute(): void {
-    rootStore.canvasStore.rotate(this.angle);
-    rootStore.canvasStore.setBaseScale(this.baseScale);
+    const store = useAppStore.getState();
+    store.setAngle(this.angle);
+    store.setScale(this.baseScale);
   }
 
   @preventScaleReset
   undo(): void {
-    rootStore.canvasStore.rotate(this.prevAngle);
-    rootStore.canvasStore.setBaseScale(this.prevBaseScale);
+    const store = useAppStore.getState();
+    store.setAngle(this.prevAngle);
+    store.setScale(this.prevBaseScale);
   }
 }

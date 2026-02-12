@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { hexToRgb, rgbToHex } from "../helpers/colorConverter";
 
 type Props = {
