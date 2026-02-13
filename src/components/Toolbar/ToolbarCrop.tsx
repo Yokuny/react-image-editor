@@ -154,10 +154,8 @@ const ToolbarCrop: React.FC = () => {
         type="button"
         className="toolbar__action-btn"
         onClick={() => {
-          // Create command BEFORE crop — constructor captures prev state from store
           const command = new CropCommand("", []);
-          crop(); // this updates imageUrl with cropped dataURL
-          // Update the command's imageUrl with the new (cropped) imageUrl
+          crop();
           const newImageUrl = useAppStore.getState().imageUrl;
           (command as any).imageUrl = newImageUrl;
           useAppStore.getState().history.push(command);

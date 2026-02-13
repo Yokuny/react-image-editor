@@ -49,7 +49,7 @@ const ColorPicker: React.FC<Props> = (props) => {
           const hexColorCode = rgbToHex(r, g, b);
           return (
             <input
-              key={index}
+              key={rgbCode}
               type="color"
               value={`${hexColorCode}`}
               onChange={(event) => updateColor(event, index)}

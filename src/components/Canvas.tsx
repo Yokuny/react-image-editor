@@ -26,7 +26,6 @@ const Canvas = () => {
   const containerRef = useRef<HTMLElement>(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
-  // Update container dimensions on resize
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -46,13 +45,11 @@ const Canvas = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Initialize Konva stage reference
   useEffect(() => {
     if (!stageRef.current || konvaStage) return;
     setKonvaStage(stageRef.current);
   }, [setKonvaStage, konvaStage]);
 
-  // Load image when imageUrl changes
   useEffect(() => {
     if (!imageUrl) {
       setImage(null);
@@ -66,7 +63,6 @@ const Canvas = () => {
       setImageInstance(img);
       setImageSize(img.naturalWidth, img.naturalHeight);
 
-      // Auto-fit image to container
       if (containerDimensions.width > 0 && containerDimensions.height > 0) {
         const padding = 40;
         const availableW = containerDimensions.width - padding;
@@ -75,15 +71,12 @@ const Canvas = () => {
         setScale(Math.min(fitScale, 1));
       }
     };
-    img.onerror = (error) => {
-      console.error("Error loading image:", error);
-    };
+    img.onerror = () => {};
   }, [imageUrl, setImageInstance, setImageSize, containerDimensions, setScale]);
 
   const imgWidth = image ? image.naturalWidth : 0;
   const imgHeight = image ? image.naturalHeight : 0;
 
-  // Calculate fit-to-screen scale for crop mode
   const cropFitScale = useMemo(() => {
     if (!containerDimensions.width || !containerDimensions.height || !imgWidth || !imgHeight) return 1;
     const padding = 60;
@@ -92,25 +85,20 @@ const Canvas = () => {
 
   const activeScale = isCropMode ? cropFitScale : scale;
 
-  // Stage dimensions
   const isRotated90 = Math.abs(angle % 180) === 90;
   const effectiveWidth = isRotated90 ? imgHeight : imgWidth;
   const effectiveHeight = isRotated90 ? imgWidth : imgHeight;
 
-  // Final stage dimensions (at least as big as the container)
   const stageWidth = Math.max(effectiveWidth * activeScale, containerDimensions.width);
   const stageHeight = Math.max(effectiveHeight * activeScale, containerDimensions.height);
 
-  // Image transform
   const centerX = stageWidth / 2;
   const centerY = stageHeight / 2;
   const scaleX = flipX ? -activeScale : activeScale;
   const scaleY = flipY ? -activeScale : activeScale;
 
-  // Crop overlay activation
   const cropOverlayActive = isCropMode && cropZoneWidth > 0 && cropZoneHeight > 0;
 
-  // Initialize crop zone when entering crop mode or ratio changes
   useEffect(() => {
     if (isCropMode && image) {
       const w = image.naturalWidth;
@@ -143,13 +131,11 @@ const Canvas = () => {
   useEffect(() => {
     if (isCropMode && transformerRef.current && cropRectRef.current) {
       transformerRef.current.nodes([cropRectRef.current]);
-      // Adjust anchor size to compensate for scale
       transformerRef.current.anchorSize(Math.max(10, 10 / activeScale));
       transformerRef.current.getLayer()?.batchDraw();
     }
   }, [isCropMode, cropOverlayActive, cropZoneWidth, cropZoneHeight, activeScale]);
 
-  // Build Konva filters
   const filters = useMemo(() => {
     const activeFilters: Array<typeof KonvaModule.Filters.Brighten> = [];
     if (brightness !== 0) activeFilters.push(KonvaModule.Filters.Brighten);

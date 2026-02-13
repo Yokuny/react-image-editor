@@ -7,7 +7,6 @@ import { useAppStore } from "../../hooks/useAppStore";
 import ColorPicker from "../ColorPicker";
 import Slider from "../Slider";
 
-// Helper to capture current effect state as EffectValue[]
 const captureEffectValues = (): EffectValue[] => {
   const state = useAppStore.getState();
   return [
@@ -48,7 +47,6 @@ export const ToolbarEffects = () => {
     resetEffects,
   } = useEffectsStore();
 
-  // Track the state before a slider interaction begins
   const beforeValuesRef = useRef<EffectValue[] | null>(null);
 
   const handleSliderStart = () => {
@@ -57,7 +55,6 @@ export const ToolbarEffects = () => {
 
   const createEffectCallback = (setter: (value: number) => void, _id: string, transform?: (v: number) => number) => {
     return (value: number) => {
-      // Capture before state on first change if not already captured
       if (!beforeValuesRef.current) {
         beforeValuesRef.current = captureEffectValues();
       }

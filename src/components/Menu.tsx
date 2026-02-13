@@ -27,8 +27,6 @@ const Menu: React.FC = () => {
     if (mode && scale !== 1) {
       setScale(1);
     }
-
-    // Logic for resetToBaseScale will be handled in the store or components if needed
   };
 
   const items: IMenuItems[] = [

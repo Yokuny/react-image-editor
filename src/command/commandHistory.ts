@@ -8,8 +8,6 @@ export interface Command {
   undo: () => Promise<void> | void;
 }
 
-const DEBUG = true;
-
 export class History {
   isCommandInProgress = false;
   private history: Command[] = [];
@@ -31,11 +29,6 @@ export class History {
     }
 
     this.setCurrentCommandIndex(this.history.length - 1);
-
-    if (DEBUG) {
-      console.log("push");
-      console.log(this.history);
-    }
   }
 
   async undo(): Promise<void> {
@@ -45,10 +38,6 @@ export class History {
       const nextCommandIndex = this.currentCommandIndex - 1;
       this.setCurrentCommandIndex(nextCommandIndex);
       await currentCommand.undo();
-
-      if (DEBUG) {
-        console.log("undo");
-      }
       this.isCommandInProgress = false;
     }
   }
@@ -60,10 +49,6 @@ export class History {
       const currentCommand = this.history[nextCommandIndex];
       this.setCurrentCommandIndex(nextCommandIndex);
       await currentCommand.execute();
-
-      if (DEBUG) {
-        console.log("redo");
-      }
       this.isCommandInProgress = false;
     }
   }

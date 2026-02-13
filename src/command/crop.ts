@@ -26,18 +26,11 @@ export class CropCommand implements Command {
     this.prevAngle = store.angle;
     this.prevBaseScale = store.scale;
 
-    // Collect effects from store
     this.prevEffects = [
       { id: "brightness", value: store.brightness },
       { id: "contrast", value: store.contrast },
       { id: "saturation", value: store.saturation },
-      { id: "tintColor", value: Number(store.tintColor) || 0 }, // tintColor is string, handling might be tricky if EffectValue expects number.
-      // Wait, EffectValue value is number. tintColor is string (hex).
-      // We need to clarify EffectValue usage or keep tintColor as string in a separate structure.
-      // For now, let's skip tintColor or assume it's not part of EffectValue number array.
-      // Actually, looking at useEffectsStore, setTintColor takes string.
-      // We should probably adapt EffectValue to allow string or store effects differently.
-      // To save time and avoid breaking types, let's just store numeric effects for now, or use any.
+      { id: "tintColor", value: Number(store.tintColor) || 0 },
       { id: "tintOpacity", value: store.tintOpacity },
       { id: "invert", value: store.invert },
       { id: "hue", value: store.hue },
@@ -50,22 +43,12 @@ export class CropCommand implements Command {
   async execute(): Promise<void> {
     try {
       const store = useAppStore.getState();
-      // image.update(this.imageUrl) - we need to see what this did.
-      // It likely loaded the new image.
       store.setImageUrl(this.imageUrl);
-      // We might need to trigger a canvas reload or something.
-      // But useAppStore's setImageUrl just sets state.
-      // The component (Canvas.tsx or similar) should react to imageUrl change and load it.
-
-      // image.effects.savedValues = image.effects.getValues();
-      // In new store, effects are state.
 
       if (store.isToolbarOpen) {
         store.setScale(1);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch {}
   }
 
   async undo(): Promise<void> {
