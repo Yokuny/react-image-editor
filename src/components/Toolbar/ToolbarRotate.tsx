@@ -57,19 +57,23 @@ const ToolbarRotate: React.FC = () => {
     <div className="toolbar__content">
       <div className="toolbar__options toolbar__options_one-col">
         <div className={`toolbar__option ${flipX ? "toolbar__option_active" : ""}`} onClick={handleFlipX}>
-          <FlipHorizontal /> <p> Flip X</p>
+          <FlipHorizontal />
+          <p>Flip X</p>
         </div>
 
         <div className={`toolbar__option ${flipY ? "toolbar__option_active" : ""}`} onClick={handleFlipY}>
-          <FlipVertical /> <p> Flip Y</p>
+          <FlipVertical />
+          <p>Flip Y</p>
         </div>
 
         <div className="toolbar__option" onClick={rotateLeft}>
-          <RotateCcw /> <p> Rotate Left</p>
+          <RotateCcw />
+          <p>Rotate Left</p>
         </div>
 
         <div className="toolbar__option" onClick={rotateRight}>
-          <RotateCw /> <p> Rotate Right</p>
+          <RotateCw />
+          <p>Rotate Right</p>
         </div>
       </div>
       <Slider

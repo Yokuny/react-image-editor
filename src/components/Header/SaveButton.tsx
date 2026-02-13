@@ -38,7 +38,6 @@ const SaveButton: React.FC = () => {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error saving image:", error);
-      alert("Failed to save image. Please try again.");
     }
   };
 

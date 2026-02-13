@@ -121,6 +121,7 @@
   background: var(--border-color);
   padding: 1.5625vw 1.172vw;
   font-weight: 600;
+  color: var(--text-color);
   font-size: 0.95em;
   user-select: none;
 }

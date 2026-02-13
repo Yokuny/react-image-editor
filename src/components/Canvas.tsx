@@ -1,7 +1,7 @@
 import type Konva from "konva";
 import KonvaModule from "konva";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Image as KonvaImage, Layer, Rect, Stage, Transformer } from "react-konva";
+import { Group, Image as KonvaImage, Layer, Rect, Stage, Transformer } from "react-konva";
 import { useCanvasStore } from "../hooks/useCanvasStore";
 import { useCropperStore } from "../hooks/useCropperStore";
 import { useEffectsStore } from "../hooks/useEffectsStore";
@@ -15,13 +15,36 @@ const Canvas = () => {
   const transformerRef = useRef<Konva.Transformer>(null);
 
   const { isToolbarOpen } = useUIStore();
-  const { setKonvaStage, konvaStage, scale, angle, flipX, flipY, mode } = useCanvasStore();
+  const { setKonvaStage, konvaStage, scale, angle, flipX, flipY, mode, setScale } = useCanvasStore();
   const { imageUrl, setImageInstance, setImageSize, imageWidth, imageHeight } = useImageStore();
   const { brightness, contrast, saturation, hue, blur, pixelate, noise, invert, tintColor, tintOpacity } = useEffectsStore();
   const { cropZoneWidth, cropZoneHeight, cropX, cropY, cropRatio, setCropZoneWidth, setCropZoneHeight, setCropX, setCropY } = useCropperStore();
 
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const isCropMode = mode === "crop" && image !== null;
+
+  const containerRef = useRef<HTMLElement>(null);
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+
+  // Update container dimensions on resize
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    };
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(containerRef.current);
+    updateSize();
+
+    return () => observer.disconnect();
+  }, []);
 
   // Initialize Konva stage reference
   useEffect(() => {
@@ -42,20 +65,60 @@ const Canvas = () => {
       setImage(img);
       setImageInstance(img);
       setImageSize(img.naturalWidth, img.naturalHeight);
+
+      // Auto-fit image to container
+      if (containerDimensions.width > 0 && containerDimensions.height > 0) {
+        const padding = 40;
+        const availableW = containerDimensions.width - padding;
+        const availableH = containerDimensions.height - padding;
+        const fitScale = Math.min(availableW / img.naturalWidth, availableH / img.naturalHeight);
+        setScale(Math.min(fitScale, 1));
+      }
     };
     img.onerror = (error) => {
       console.error("Error loading image:", error);
     };
-  }, [imageUrl, setImageInstance, setImageSize]);
+  }, [imageUrl, setImageInstance, setImageSize, containerDimensions, setScale]);
 
-  // Initialize crop zone when entering crop mode
+  const imgWidth = image ? image.naturalWidth : 0;
+  const imgHeight = image ? image.naturalHeight : 0;
+
+  // Calculate fit-to-screen scale for crop mode
+  const cropFitScale = useMemo(() => {
+    if (!containerDimensions.width || !containerDimensions.height || !imgWidth || !imgHeight) return 1;
+    const padding = 60;
+    return Math.min((containerDimensions.width - padding) / imgWidth, (containerDimensions.height - padding) / imgHeight, 1);
+  }, [containerDimensions, imgWidth, imgHeight]);
+
+  const activeScale = isCropMode ? cropFitScale : scale;
+
+  // Stage dimensions
+  const isRotated90 = Math.abs(angle % 180) === 90;
+  const effectiveWidth = isRotated90 ? imgHeight : imgWidth;
+  const effectiveHeight = isRotated90 ? imgWidth : imgHeight;
+
+  // Final stage dimensions (at least as big as the container)
+  const stageWidth = Math.max(effectiveWidth * activeScale, containerDimensions.width);
+  const stageHeight = Math.max(effectiveHeight * activeScale, containerDimensions.height);
+
+  // Image transform
+  const centerX = stageWidth / 2;
+  const centerY = stageHeight / 2;
+  const scaleX = flipX ? -activeScale : activeScale;
+  const scaleY = flipY ? -activeScale : activeScale;
+
+  // Crop overlay activation
+  const cropOverlayActive = isCropMode && cropZoneWidth > 0 && cropZoneHeight > 0;
+
+  // Initialize crop zone when entering crop mode or ratio changes
   useEffect(() => {
     if (isCropMode && image) {
       const w = image.naturalWidth;
       const h = image.naturalHeight;
-      if (cropRatio) {
-        // Fit the ratio inside the image
-        const ratioValue = cropRatio.width / cropRatio.height;
+
+      const ratioValue = cropRatio ? cropRatio.width / cropRatio.height : null;
+
+      if (cropRatio && ratioValue) {
         let cropW = w;
         let cropH = w / ratioValue;
         if (cropH > h) {
@@ -67,22 +130,24 @@ const Canvas = () => {
         setCropX(Math.round((w - cropW) / 2));
         setCropY(Math.round((h - cropH) / 2));
       } else if (cropZoneWidth === 0 || cropZoneHeight === 0) {
-        // Default: full image
         setCropZoneWidth(w);
         setCropZoneHeight(h);
         setCropX(0);
         setCropY(0);
       }
     }
-  }, [isCropMode, image, cropRatio, setCropZoneWidth, setCropZoneHeight, setCropX, setCropY, cropZoneWidth, cropZoneHeight]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCropMode, image, cropRatio, setCropZoneWidth, setCropZoneHeight, setCropX, setCropY]);
 
   // Attach Transformer to crop rect
   useEffect(() => {
     if (isCropMode && transformerRef.current && cropRectRef.current) {
       transformerRef.current.nodes([cropRectRef.current]);
+      // Adjust anchor size to compensate for scale
+      transformerRef.current.anchorSize(Math.max(10, 10 / activeScale));
       transformerRef.current.getLayer()?.batchDraw();
     }
-  }, [isCropMode]);
+  }, [isCropMode, cropOverlayActive, cropZoneWidth, cropZoneHeight, activeScale]);
 
   // Build Konva filters
   const filters = useMemo(() => {
@@ -130,7 +195,6 @@ const Canvas = () => {
       const imgW = imageWidth || (image?.naturalWidth ?? 0);
       const imgH = imageHeight || (image?.naturalHeight ?? 0);
 
-      // Clamp position within image bounds
       let x = Math.max(0, Math.min(node.x(), imgW - node.width() * node.scaleX()));
       let y = Math.max(0, Math.min(node.y(), imgH - node.height() * node.scaleY()));
       x = Math.round(x);
@@ -151,15 +215,12 @@ const Canvas = () => {
       const imgW = imageWidth || (image?.naturalWidth ?? 0);
       const imgH = imageHeight || (image?.naturalHeight ?? 0);
 
-      // Get the new dimensions from scale
       let newWidth = Math.round(node.width() * node.scaleX());
       let newHeight = Math.round(node.height() * node.scaleY());
 
-      // Clamp to image bounds
       newWidth = Math.max(10, Math.min(newWidth, imgW));
       newHeight = Math.max(10, Math.min(newHeight, imgH));
 
-      // If aspect ratio is locked, enforce it
       if (cropRatio) {
         const ratioValue = cropRatio.width / cropRatio.height;
         const currentRatio = newWidth / newHeight;
@@ -170,11 +231,9 @@ const Canvas = () => {
         }
       }
 
-      // Clamp position
       const x = Math.max(0, Math.min(Math.round(node.x()), imgW - newWidth));
       const y = Math.max(0, Math.min(Math.round(node.y()), imgH - newHeight));
 
-      // Reset scale and set size directly
       node.scaleX(1);
       node.scaleY(1);
       node.width(newWidth);
@@ -190,110 +249,78 @@ const Canvas = () => {
     [imageWidth, imageHeight, image, cropRatio, setCropZoneWidth, setCropZoneHeight, setCropX, setCropY],
   );
 
-  const imgWidth = image ? image.naturalWidth : 0;
-  const imgHeight = image ? image.naturalHeight : 0;
-
-  // Stage dimensions
-  const isRotated90 = Math.abs(angle % 180) === 90;
-  const effectiveWidth = isRotated90 ? imgHeight : imgWidth;
-  const effectiveHeight = isRotated90 ? imgWidth : imgHeight;
-  const stageWidth = Math.max(effectiveWidth * scale, 1);
-  const stageHeight = Math.max(effectiveHeight * scale, 1);
-
-  // Image transform
-  const centerX = stageWidth / 2;
-  const centerY = stageHeight / 2;
-  const scaleX = flipX ? -scale : scale;
-  const scaleY = flipY ? -scale : scale;
-
-  // Crop overlay dimensions (in image coordinates, rendered in a separate layer at scale 1 over the stage)
-  const cropOverlayActive = isCropMode && cropZoneWidth > 0 && cropZoneHeight > 0;
-
-  // For crop mode we render at scale=1 (no zoom/rotation applied) for simplicity
-  const cropStageWidth = isCropMode ? imgWidth : stageWidth;
-  const cropStageHeight = isCropMode ? imgHeight : stageHeight;
-
   return (
-    <section className={`canvas custom-scrollbar ${isToolbarOpen ? "canvas_toolbar-open" : ""}`}>
-      <Stage ref={stageRef} width={isCropMode ? cropStageWidth : stageWidth} height={isCropMode ? cropStageHeight : stageHeight} style={{ display: "inline-block" }}>
-        {/* Image Layer */}
+    <section ref={containerRef} className={`canvas custom-scrollbar ${isToolbarOpen ? "canvas_toolbar-open" : ""}`}>
+      <Stage ref={stageRef} width={stageWidth} height={stageHeight} style={{ display: "inline-block" }}>
         <Layer>
           {image && (
             <KonvaImage
               ref={imageRef}
               image={image}
-              x={isCropMode ? 0 : centerX}
-              y={isCropMode ? 0 : centerY}
+              x={centerX}
+              y={centerY}
               width={imgWidth}
               height={imgHeight}
-              offsetX={isCropMode ? 0 : imgWidth / 2}
-              offsetY={isCropMode ? 0 : imgHeight / 2}
-              scaleX={isCropMode ? 1 : scaleX}
-              scaleY={isCropMode ? 1 : scaleY}
+              offsetX={imgWidth / 2}
+              offsetY={imgHeight / 2}
+              scaleX={isCropMode ? activeScale : scaleX}
+              scaleY={isCropMode ? activeScale : scaleY}
               rotation={isCropMode ? 0 : angle}
             />
           )}
         </Layer>
 
-        {/* Crop Overlay Layer */}
         {cropOverlayActive && (
           <Layer>
-            {/* Dark overlay — drawn using 4 rectangles around the crop zone */}
-            {/* Top */}
-            <Rect x={0} y={0} width={imgWidth} height={cropY} fill="rgba(0,0,0,0.5)" listening={false} />
-            {/* Bottom */}
-            <Rect x={0} y={cropY + cropZoneHeight} width={imgWidth} height={imgHeight - cropY - cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
-            {/* Left */}
-            <Rect x={0} y={cropY} width={cropX} height={cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
-            {/* Right */}
-            <Rect x={cropX + cropZoneWidth} y={cropY} width={imgWidth - cropX - cropZoneWidth} height={cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
+            <Group x={centerX - (imgWidth * activeScale) / 2} y={centerY - (imgHeight * activeScale) / 2} scaleX={activeScale} scaleY={activeScale}>
+              <Rect x={0} y={0} width={imgWidth} height={cropY} fill="rgba(0,0,0,0.5)" listening={false} />
+              <Rect x={0} y={cropY + cropZoneHeight} width={imgWidth} height={imgHeight - cropY - cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
+              <Rect x={0} y={cropY} width={cropX} height={cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
+              <Rect x={cropX + cropZoneWidth} y={cropY} width={imgWidth - cropX - cropZoneWidth} height={cropZoneHeight} fill="rgba(0,0,0,0.5)" listening={false} />
 
-            {/* Crop zone — draggable & resizable */}
-            <Rect
-              ref={cropRectRef}
-              x={cropX}
-              y={cropY}
-              width={cropZoneWidth}
-              height={cropZoneHeight}
-              fill="transparent"
-              stroke="#ffffff"
-              strokeWidth={2}
-              dash={[6, 3]}
-              draggable
-              onDragMove={handleCropDragMove}
-              onTransformEnd={handleCropTransform}
-            />
+              <Rect
+                ref={cropRectRef}
+                x={cropX}
+                y={cropY}
+                width={cropZoneWidth}
+                height={cropZoneHeight}
+                fill="transparent"
+                stroke="#ffffff"
+                strokeWidth={2}
+                dash={[6, 3]}
+                draggable
+                onDragMove={handleCropDragMove}
+                onTransformEnd={handleCropTransform}
+              />
 
-            {/* Rule of thirds grid lines */}
-            <Rect x={cropX + cropZoneWidth / 3} y={cropY} width={0.5} height={cropZoneHeight} fill="rgba(255,255,255,0.3)" listening={false} />
-            <Rect x={cropX + (cropZoneWidth * 2) / 3} y={cropY} width={0.5} height={cropZoneHeight} fill="rgba(255,255,255,0.3)" listening={false} />
-            <Rect x={cropX} y={cropY + cropZoneHeight / 3} width={cropZoneWidth} height={0.5} fill="rgba(255,255,255,0.3)" listening={false} />
-            <Rect x={cropX} y={cropY + (cropZoneHeight * 2) / 3} width={cropZoneWidth} height={0.5} fill="rgba(255,255,255,0.3)" listening={false} />
+              <Rect x={cropX + cropZoneWidth / 3} y={cropY} width={0.5} height={cropZoneHeight} fill="rgba(255,255,255,0.3)" listening={false} />
+              <Rect x={cropX + (cropZoneWidth * 2) / 3} y={cropY} width={0.5} height={cropZoneHeight} fill="rgba(255,255,255,0.3)" listening={false} />
+              <Rect x={cropX} y={cropY + cropZoneHeight / 3} width={cropZoneWidth} height={0.5} fill="rgba(255,255,255,0.3)" listening={false} />
+              <Rect x={cropX} y={cropY + (cropZoneHeight * 2) / 3} width={cropZoneWidth} height={0.5} fill="rgba(255,255,255,0.3)" listening={false} />
 
-            {/* Transformer for resizing */}
-            <Transformer
-              ref={transformerRef}
-              rotateEnabled={false}
-              keepRatio={cropRatio !== null}
-              enabledAnchors={
-                cropRatio !== null
-                  ? ["top-left", "top-right", "bottom-left", "bottom-right"]
-                  : ["top-left", "top-center", "top-right", "middle-left", "middle-right", "bottom-left", "bottom-center", "bottom-right"]
-              }
-              borderStroke="#ffffff"
-              borderStrokeWidth={0}
-              anchorStroke="#ffffff"
-              anchorFill="#ffffff"
-              anchorSize={10}
-              anchorCornerRadius={2}
-              boundBoxFunc={(oldBox, newBox) => {
-                // Prevent too small
-                if (newBox.width < 10 || newBox.height < 10) {
-                  return oldBox;
+              <Transformer
+                ref={transformerRef}
+                rotateEnabled={false}
+                keepRatio={cropRatio !== null}
+                enabledAnchors={
+                  cropRatio !== null
+                    ? ["top-left", "top-right", "bottom-left", "bottom-right"]
+                    : ["top-left", "top-center", "top-right", "middle-left", "middle-right", "bottom-left", "bottom-center", "bottom-right"]
                 }
-                return newBox;
-              }}
-            />
+                borderStroke="#ffffff"
+                borderStrokeWidth={0}
+                anchorStroke="#ffffff"
+                anchorFill="#ffffff"
+                anchorSize={10}
+                anchorCornerRadius={2}
+                boundBoxFunc={(oldBox, newBox) => {
+                  if (newBox.width < 10 || newBox.height < 10) {
+                    return oldBox;
+                  }
+                  return newBox;
+                }}
+              />
+            </Group>
           </Layer>
         )}
       </Stage>
